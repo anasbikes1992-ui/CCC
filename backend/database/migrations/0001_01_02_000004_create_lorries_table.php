@@ -1,0 +1,27 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        Schema::create('lorries', function (Blueprint $table) {
+            $table->uuid('id')->primary();
+            $table->string('registration_number', 20)->unique();
+            $table->string('type', 20);
+            $table->decimal('max_weight_kg', 8, 2);
+            $table->integer('max_capacity_units')->default(300);
+            $table->boolean('is_active')->default(true);
+            $table->timestampsTz();
+            $table->softDeletesTz();
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::dropIfExists('lorries');
+    }
+};

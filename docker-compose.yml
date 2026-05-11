@@ -1,0 +1,55 @@
+# Colombo Cargo Connect — Local development infrastructure
+#
+# Brings up the two stateful dependencies (PostgreSQL 16 + PostGIS, Redis 7)
+# that Laravel needs locally. The application itself (php artisan serve, next dev,
+# flutter run) is started natively on the host; only the databases live in containers.
+#
+# Usage:
+#   docker compose up -d         # start in background
+#   docker compose ps            # check status
+#   docker compose logs -f       # tail logs
+#   docker compose down          # stop (data persists in named volumes)
+#   docker compose down -v       # stop AND wipe data
+#
+# Ports exposed on localhost:
+#   5433 — PostgreSQL  (user: ccc, password: ccc_local_dev_only, db: ccc)
+#   6379 — Redis       (no password, local only)
+#
+# DO NOT use these credentials in any non-local environment.
+
+services:
+  postgres:
+    image: postgis/postgis:16-3.4
+    container_name: ccc-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ccc
+      POSTGRES_PASSWORD: ccc_local_dev_only
+      POSTGRES_DB: ccc
+    ports:
+      - "5433:5432"
+    volumes:
+      - ccc_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ccc -d ccc"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    container_name: ccc-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - ccc_redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  ccc_postgres_data:
+  ccc_redis_data:

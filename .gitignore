@@ -1,0 +1,96 @@
+# =============================================================================
+# Colombo Cargo Connect — Mono-repo .gitignore
+# =============================================================================
+
+# --- Secrets & env ---
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+secrets/
+
+# --- OS junk ---
+.DS_Store
+Thumbs.db
+desktop.ini
+ehthumbs.db
+$RECYCLE.BIN/
+
+# --- Editors ---
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# =============================================================================
+# Backend (Laravel 11)
+# =============================================================================
+backend/vendor/
+backend/node_modules/
+backend/public/build/
+backend/public/hot/
+backend/public/storage
+backend/storage/*.key
+backend/storage/app/public/
+backend/storage/framework/cache/
+backend/storage/framework/sessions/
+backend/storage/framework/testing/
+backend/storage/framework/views/
+backend/storage/logs/
+backend/.phpunit.cache/
+backend/.phpunit.result.cache
+backend/auth.json
+backend/_ide_helper*.php
+backend/.phpstorm.meta.php
+
+# =============================================================================
+# Web (Next.js — sender, tracking)
+# =============================================================================
+web-sender/node_modules/
+web-sender/.next/
+web-sender/out/
+web-sender/build/
+web-sender/coverage/
+web-sender/.turbo/
+web-sender/next-env.d.ts
+web-sender/.vercel
+
+web-tracking/node_modules/
+web-tracking/.next/
+web-tracking/out/
+web-tracking/build/
+web-tracking/coverage/
+web-tracking/.turbo/
+web-tracking/next-env.d.ts
+web-tracking/.vercel
+
+# =============================================================================
+# Mobile (Flutter — driver)
+# =============================================================================
+mobile-driver/.dart_tool/
+mobile-driver/.flutter-plugins
+mobile-driver/.flutter-plugins-dependencies
+mobile-driver/.packages
+mobile-driver/.pub-cache/
+mobile-driver/.pub/
+mobile-driver/build/
+mobile-driver/android/.gradle/
+mobile-driver/android/captures/
+mobile-driver/android/local.properties
+mobile-driver/android/key.properties
+mobile-driver/android/**/gradle-wrapper.jar
+mobile-driver/ios/Pods/
+mobile-driver/ios/.symlinks/
+mobile-driver/ios/Flutter/Flutter.framework
+mobile-driver/ios/Flutter/Flutter.podspec
+mobile-driver/ios/Flutter/flutter_export_environment.sh
+mobile-driver/ios/Flutter/Generated.xcconfig
+mobile-driver/lib/config.dart
+
+# =============================================================================
+# Docker / local infra
+# =============================================================================
+.docker-data/
+docker-compose.override.yml
