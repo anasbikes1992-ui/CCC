@@ -1,0 +1,60 @@
+@import "tailwindcss";
+
+:root {
+  --background: #edf5f6;
+  --surface: #f7fcfd;
+  --foreground: #102a43;
+  --muted: #486581;
+  --accent: #0f7a8a;
+  --accent-2: #f0b429;
+  --line: #d3e4e8;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-accent-2: var(--accent-2);
+  --color-line: var(--line);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-geist-sans), "Segoe UI", sans-serif;
+  min-height: 100vh;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 55% 40% at 92% 5%, rgba(15,122,138,0.18) 0%, transparent 70%),
+    radial-gradient(ellipse 50% 35% at 8% 15%, rgba(240,180,41,0.2) 0%, transparent 70%),
+    radial-gradient(ellipse 70% 45% at 50% 105%, rgba(15,122,138,0.08) 0%, transparent 70%),
+    linear-gradient(140deg, #edf6f8 0%, #f7fcfd 50%, #edf3f7 100%);
+}
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.6; transform: scale(1.3); }
+}
+
+.animate-fade-up   { animation: fade-up 0.45s cubic-bezier(0.22,1,0.36,1) both; }
+.animate-fade-in   { animation: fade-in 0.3s ease both; }
+.animate-pulse-dot { animation: pulse-dot 1.8s ease infinite; }

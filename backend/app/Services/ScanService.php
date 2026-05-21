@@ -69,7 +69,11 @@ class ScanService
             $parcel->status_changed_at = $occurredAt;
             $parcel->save();
 
-            return $this->writeEvent($parcel, $eventType, $from->value, $to->value, $actor, $scanMode, $deviceId, $geo, $metadata, $occurredAt);
+            $event = $this->writeEvent($parcel, $eventType, $from->value, $to->value, $actor, $scanMode, $deviceId, $geo, $metadata, $occurredAt);
+            
+            \App\Events\ParcelStatusChanged::dispatch($parcel, $event);
+            
+            return $event;
         });
     }
 

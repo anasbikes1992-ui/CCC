@@ -44,6 +44,8 @@ backend/.phpunit.result.cache
 backend/auth.json
 backend/_ide_helper*.php
 backend/.phpstorm.meta.php
+backend/booking_test_output.txt
+backend/test_output.txt
 
 # =============================================================================
 # Web (Next.js — sender, tracking)

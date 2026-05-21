@@ -38,7 +38,12 @@ class AuthController extends Controller
 
     public function login(LoginRequest $request): JsonResponse
     {
-        $user = User::where('phone', $request->validated('phone'))->first();
+        // Support login by phone OR email
+        $identifier = $request->validated('phone');
+        $user = filter_var($identifier, FILTER_VALIDATE_EMAIL)
+            ? User::where('email', $identifier)->first()
+            : User::where('phone', $identifier)->first();
+
         if (! $user || ! Hash::check($request->validated('password'), $user->password_hash)) {
             throw new AuthenticationException('Invalid credentials');
         }
@@ -46,7 +51,7 @@ class AuthController extends Controller
         $token = $user->createToken('api')->plainTextToken;
 
         return ApiResponse::success([
-            'user' => $this->shape($user),
+            'user'  => $this->shape($user),
             'token' => $token,
         ]);
     }

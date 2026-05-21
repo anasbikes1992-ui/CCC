@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api\V1\Customer;
 
+use Barryvdh\DomPDF\Facade\Pdf;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Customer\BookParcelRequest;
 use App\Http\Resources\ParcelResource;
@@ -11,7 +12,9 @@ use App\Http\Responses\ApiResponse;
 use App\Models\Parcel;
 use App\Services\BookingService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Response;
 use Illuminate\Http\Request;
+use Throwable;
 
 class ParcelController extends Controller
 {
@@ -63,5 +66,42 @@ class ParcelController extends Controller
                 'to_status' => $e->to_status,
             ]),
         ]);
+    }
+
+    public function label(Request $request, string $id): Response|JsonResponse
+    {
+        $parcel = Parcel::query()
+            ->where('id', $id)
+            ->where('customer_id', $request->user()->id)
+            ->with(['route', 'trip', 'packageSize', 'pickupHub', 'dropHub'])
+            ->firstOrFail();
+
+        $pickup = $parcel->pickup_type === 'hub'
+            ? ($parcel->pickupHub?->name ?? 'Hub')
+            : ($parcel->pickup_address ?? 'Doorstep Pickup');
+        $drop = $parcel->drop_type === 'hub'
+            ? ($parcel->dropHub?->name ?? 'Hub')
+            : ($parcel->drop_address ?? 'Doorstep Delivery');
+
+        $html = '<html><body style="font-family: sans-serif; font-size: 12px;">'
+            .'<h2 style="margin:0 0 6px 0;">'.$parcel->parcel_number.'</h2>'
+            .'<div style="margin-bottom:6px;"><strong>Route:</strong> '.e($parcel->route?->display_name ?? $parcel->route?->code ?? 'N/A').'</div>'
+            .'<div style="margin-bottom:6px;"><strong>From:</strong> '.e($pickup).'</div>'
+            .'<div style="margin-bottom:6px;"><strong>To:</strong> '.e($drop).'</div>'
+            .'<div style="margin-bottom:6px;"><strong>Receiver:</strong> '.e($parcel->receiver_name).' ('.e($parcel->receiver_phone).')</div>'
+            .'<div style="margin-bottom:6px;"><strong>Size:</strong> '.e($parcel->packageSize?->code ?? 'N/A').'</div>'
+            .'<div><strong>Trip:</strong> '.e($parcel->trip?->trip_code ?? 'Unassigned').'</div>'
+            .'</body></html>';
+
+        try {
+            $pdf = Pdf::loadHTML($html)->setPaper([0, 0, 288, 432]);
+
+            return response($pdf->output(), 200, [
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => 'inline; filename="label-'.$parcel->parcel_number.'.pdf"',
+            ]);
+        } catch (Throwable) {
+            return ApiResponse::error('SERVER_ERROR', 'Failed to generate label PDF', [], 500);
+        }
     }
 }

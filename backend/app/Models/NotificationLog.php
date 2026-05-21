@@ -24,9 +24,14 @@ class NotificationLog extends Model
     protected function casts(): array
     {
         return [
-            'payload' => 'array',
-            'sent_at' => 'datetime',
+            'payload'    => 'array',
+            'sent_at'    => 'datetime',
             'created_at' => 'datetime',
         ];
+    }
+
+    public function parcel(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(\App\Models\Parcel::class);
     }
 }

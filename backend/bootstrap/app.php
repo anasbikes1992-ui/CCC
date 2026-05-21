@@ -16,6 +16,12 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->statefulApi();
 
         $middleware->throttleApi();
+
+        $middleware->alias([
+            'ensure.admin' => \App\Http\Middleware\EnsureAdmin::class,
+            'ensure.driver.profile' => \App\Http\Middleware\EnsureDriverProfile::class,
+            'ensure.hub.staff'      => \App\Http\Middleware\EnsureHubStaff::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         // Force JSON envelope on all API errors so frontends never get HTML pages.

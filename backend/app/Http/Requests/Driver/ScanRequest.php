@@ -10,6 +10,13 @@ use Illuminate\Validation\Rule;
 
 class ScanRequest extends FormRequest
 {
+    protected function prepareForValidation(): void
+    {
+        $this->merge([
+            'scan_mode' => strtolower((string) $this->header('X-Scan-Mode', 'qr')),
+        ]);
+    }
+
     public function authorize(): bool
     {
         return true;
@@ -25,13 +32,15 @@ class ScanRequest extends FormRequest
             ->all();
 
         return [
-            'qr_token' => ['nullable', 'string'],
+            'scan_mode' => ['required', Rule::in(['qr', 'manual'])],
+            'qr_token' => ['nullable', 'string', 'required_if:scan_mode,qr'],
             'event_type' => ['required', 'string', Rule::in($allowed)],
             'geo.lat' => ['nullable', 'numeric', 'between:-90,90'],
             'geo.lng' => ['nullable', 'numeric', 'between:-180,180'],
             'device_id' => ['nullable', 'string', 'max:80'],
             'occurred_at' => ['nullable', 'date'],
-            'metadata' => ['nullable', 'array'],
+            'metadata' => ['nullable', 'array', 'max:20'],
+            'metadata.*' => ['nullable', 'string', 'max:1000'],
         ];
     }
 }
