@@ -91,12 +91,20 @@ Create four separate Vercel projects from the same GitHub repository with these 
 - `web-admin`
 - `web-hub`
 
-Environment variables:
+Environment variables per project (all use the same variable names now):
 
-- `web-sender`: `NEXT_PUBLIC_API_BASE_URL=https://<railway-backend-domain>/api/v1`
-- `web-tracking`: `NEXT_PUBLIC_API_BASE_URL=https://<railway-backend-domain>/api/v1`
-- `web-admin`: `NEXT_PUBLIC_API_URL=https://<railway-backend-domain>/api/v1`
-- `web-hub`: `NEXT_PUBLIC_API_URL=https://<railway-backend-domain>/api/v1`
+**web-sender** — set in Vercel project settings → Environment Variables:
+- `NEXT_PUBLIC_API_BASE_URL` = `https://<railway-backend-domain>/api/v1`
+- `NEXT_PUBLIC_TRACKING_URL` = `https://<ccc-tracking.vercel.app>`
+
+**web-tracking** — set in Vercel project settings → Environment Variables:
+- `NEXT_PUBLIC_API_BASE_URL` = `https://<railway-backend-domain>/api/v1`
+
+**web-admin** — set in Vercel project settings → Environment Variables:
+- `NEXT_PUBLIC_API_BASE_URL` = `https://<railway-backend-domain>/api/v1`
+
+**web-hub** — set in Vercel project settings → Environment Variables:
+- `NEXT_PUBLIC_API_BASE_URL` = `https://<railway-backend-domain>/api/v1`
 
 ## 4. Launch Order
 

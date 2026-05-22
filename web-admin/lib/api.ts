@@ -1,6 +1,6 @@
 // lib/api.ts — Typed fetch wrapper for the CCC Laravel API
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8000/api/v1';
+const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:8000/api/v1';
 
 function getToken(): string | null {
   if (typeof window === 'undefined') return null;
@@ -72,14 +72,6 @@ export async function login(phone: string, password: string): Promise<{ user: Au
   return res.data;
 }
 
-export async function loginWithEmail(email: string, password: string): Promise<{ user: AuthUser; token: string }> {
-  // Backend uses phone login; we look up user by email via admin endpoint
-  const res = await request<{ success: boolean; data: { user: AuthUser; token: string } }>('/auth/login/email', {
-    method: 'POST',
-    body: JSON.stringify({ email, password }),
-  });
-  return res.data;
-}
 
 export async function logout(): Promise<void> {
   await request('/auth/logout', { method: 'POST' }).catch(() => {});

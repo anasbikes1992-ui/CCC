@@ -1,6 +1,6 @@
 // lib/api.ts — Hub console API client
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8000/api/v1';
+const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:8000/api/v1';
 
 const TOKEN_KEY = 'ccc_hub_token';
 const USER_KEY  = 'ccc_hub_user';
@@ -178,7 +178,7 @@ export async function lookupParcel(idOrNumber: string) {
 
 export type ScanEvent =
   | 'RECEIVED_AT_ORIGIN_HUB'
-  | 'RECEIVED_AT_DESTINATION_HUB'
+  | 'ARRIVED_AT_DESTINATION_HUB'
   | 'LOADED_ON_LORRY'
   | 'OUT_FOR_DELIVERY';
 

@@ -20,7 +20,7 @@ function LoginForm() {
     setError('');
 
     try {
-      const BASE = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8000/api/v1';
+      const BASE = process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:8000/api/v1';
 
       // Try email login via a custom endpoint first, fall back to phone
       const res = await fetch(`${BASE}/auth/login`, {

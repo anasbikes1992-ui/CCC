@@ -32,7 +32,7 @@ export const PARCEL_STATUS_COLORS: Record<string, string> = {
 
 export const SCAN_EVENT_LABELS: Record<string, string> = {
   RECEIVED_AT_ORIGIN_HUB:        'Receive at Origin Hub',
-  RECEIVED_AT_DESTINATION_HUB:   'Receive at Destination Hub',
+  ARRIVED_AT_DESTINATION_HUB:    'Arrive at Destination Hub',
   LOADED_ON_LORRY:               'Load on Lorry',
   OUT_FOR_DELIVERY:              'Out for Delivery',
 };

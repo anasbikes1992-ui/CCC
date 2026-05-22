@@ -4,7 +4,9 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { fetchApi, getToken, clearToken } from "../../lib/api";
-import { Package, Plus, MapPin, Truck, ChevronRight, LogOut } from "lucide-react";
+import { Package, Plus, Truck, ChevronRight, LogOut } from "lucide-react";
+
+const TRACKING_URL = process.env.NEXT_PUBLIC_TRACKING_URL ?? "http://localhost:3001";
 
 export default function DashboardPage() {
   const [parcels, setParcels] = useState<any[]>([]);
@@ -96,9 +98,11 @@ export default function DashboardPage() {
         ) : (
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {parcels.map((parcel: any) => (
-              <Link
-                href={`/track/${parcel.parcel_number}`}
+              <a
+                href={`${TRACKING_URL}/${parcel.parcel_number}`}
                 key={parcel.id}
+                target="_blank"
+                rel="noreferrer"
                 className="group relative flex flex-col overflow-hidden rounded-2xl border border-line bg-surface p-5 shadow-sm transition hover:shadow-md"
               >
                 <div className="flex items-center justify-between">
@@ -126,7 +130,7 @@ export default function DashboardPage() {
                   <span className="text-muted">Receiver: {parcel.receiver_name}</span>
                   <ChevronRight className="h-4 w-4 text-muted transition group-hover:text-accent group-hover:translate-x-1" />
                 </div>
-              </Link>
+              </a>
             ))}
           </div>
         )}

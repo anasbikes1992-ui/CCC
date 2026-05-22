@@ -1,3 +1,4 @@
+# ── Stage 1: Install PHP dependencies ────────────────────────────────────────
 FROM composer:2 AS vendor
 
 WORKDIR /app
@@ -13,10 +14,12 @@ RUN composer install \
     --ignore-platform-req=ext-bcmath \
     --ignore-platform-req=ext-pdo_pgsql
 
+# ── Stage 2: Runtime image ────────────────────────────────────────────────────
 FROM php:8.3-cli-bookworm
 
 WORKDIR /app/backend
 
+# Install system dependencies and PHP extensions
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         git \
@@ -25,12 +28,24 @@ RUN apt-get update \
         libjpeg62-turbo-dev \
         libpng-dev \
         libpq-dev \
+        libzip-dev \
+        zip \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install bcmath exif gd pdo_pgsql \
+    && docker-php-ext-install bcmath exif gd pdo_pgsql pcntl zip \
     && rm -rf /var/lib/apt/lists/*
 
+# Copy vendor from Stage 1 and application source
 COPY --from=vendor /app/vendor ./vendor
 COPY backend/. .
+
+# Set up storage directories with correct permissions
+RUN mkdir -p \
+        storage/framework/cache/data \
+        storage/framework/sessions \
+        storage/framework/views \
+        storage/logs \
+        bootstrap/cache \
+    && chmod -R 775 storage bootstrap/cache
 
 RUN chmod +x /app/backend/start-railway.sh
 

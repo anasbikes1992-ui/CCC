@@ -31,7 +31,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             </a>
             <nav className="flex items-center gap-5 text-sm text-muted">
               <a
-                href="http://localhost:3001"
+                href={process.env.NEXT_PUBLIC_TRACKING_URL ?? "http://localhost:3001"}
                 target="_blank"
                 rel="noreferrer"
                 className="flex items-center gap-1.5 transition-colors hover:text-foreground"

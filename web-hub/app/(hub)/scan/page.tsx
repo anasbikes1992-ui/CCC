@@ -15,7 +15,7 @@ const AVAILABLE_EVENTS: Record<string, ScanEvent[]> = {
   PICKED_UP:                  ['RECEIVED_AT_ORIGIN_HUB'],
   RECEIVED_AT_ORIGIN_HUB:     ['LOADED_ON_LORRY'],
   ARRIVED_AT_DESTINATION_HUB: ['OUT_FOR_DELIVERY'],
-  IN_TRANSIT:                 ['RECEIVED_AT_DESTINATION_HUB'],
+  IN_TRANSIT:                 ['ARRIVED_AT_DESTINATION_HUB'],
 };
 
 export default function ScanPage() {
