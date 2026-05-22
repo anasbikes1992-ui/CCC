@@ -29,9 +29,15 @@ export default function TripsPage() {
   const [drivers, setDrivers]   = useState<Driver[]>([]);
 
   useEffect(() => {
-    Promise.all([getRoutes(), getLorries(), getDrivers()]).then(([r, l, d]) => {
-      setRoutes(r); setLorries(l); setDrivers(d.drivers);
-    });
+    Promise.all([getRoutes(), getLorries(), getDrivers()])
+      .then(([r, l, d]) => {
+        setRoutes(r);
+        setLorries(l);
+        setDrivers(d.drivers);
+      })
+      .catch((error) => {
+        console.error('Failed to load trip dependencies', error);
+      });
   }, []);
 
   const load = useCallback(async () => {
@@ -59,12 +65,36 @@ export default function TripsPage() {
   };
 
   const handleSave = async () => {
+    if (!form.route_id) {
+      alert('Route is required.');
+      return;
+    }
+
+    if (!form.scheduled_departure) {
+      alert('Scheduled departure is required.');
+      return;
+    }
+
+    if (!Number.isFinite(form.capacity_units_max) || form.capacity_units_max < 1) {
+      alert('Capacity must be at least 1.');
+      return;
+    }
+
     setSaving(true);
     try {
+      const payload: Record<string, unknown> = {
+        route_id: form.route_id,
+        lorry_id: form.lorry_id || null,
+        driver_id: form.driver_id || null,
+        scheduled_departure: form.scheduled_departure,
+        scheduled_arrival: form.scheduled_arrival || null,
+        capacity_units_max: form.capacity_units_max,
+      };
+
       if (editTrip) {
-        await updateTrip(editTrip.id, form as Record<string, unknown>);
+        await updateTrip(editTrip.id, payload);
       } else {
-        await createTrip(form as Record<string, unknown>);
+        await createTrip(payload);
       }
       setShowForm(false);
       load();
@@ -190,7 +220,10 @@ export default function TripsPage() {
           </FormField>
           <FormField label="Max Capacity Units">
             <input type="number" className="form-input" value={form.capacity_units_max} min={1}
-              onChange={(e) => setForm(f => ({ ...f, capacity_units_max: parseInt(e.target.value) }))} />
+              onChange={(e) => {
+                const value = parseInt(e.target.value, 10);
+                setForm(f => ({ ...f, capacity_units_max: Number.isNaN(value) ? 1 : value }));
+              }} />
           </FormField>
           <div style={{ display: 'flex', gap: 10, marginTop: 24 }}>
             <button className="btn btn-secondary" onClick={() => setShowForm(false)} style={{ flex: 1 }}>Cancel</button>

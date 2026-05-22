@@ -41,6 +41,33 @@ export default function DriversPage() {
   };
 
   const handleSave = async () => {
+    if (!form.license_number.trim()) {
+      alert('License number is required.');
+      return;
+    }
+
+    if (!form.license_expires_at) {
+      alert('License expiry date is required.');
+      return;
+    }
+
+    if (!editDrv) {
+      if (!form.full_name.trim()) {
+        alert('Full name is required.');
+        return;
+      }
+
+      if (!/^\+\d{10,15}$/.test(form.phone)) {
+        alert('Phone must be in E.164 format (example: +94771234567).');
+        return;
+      }
+
+      if (form.password.length < 8) {
+        alert('Password must be at least 8 characters.');
+        return;
+      }
+    }
+
     setSaving(true);
     try {
       if (editDrv) {
@@ -87,7 +114,11 @@ export default function DriversPage() {
                 <td>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                     <span style={{ fontSize: 12 }}>{formatDate(d.license_expires_at, 'dd MMM yyyy')}</span>
-                    {isExpiringSoon(d.license_expires_at) && <AlertTriangle size={13} color="var(--warning)" title="Expiring soon!" />}
+                    {isExpiringSoon(d.license_expires_at) && (
+                      <span title="Expiring soon!" aria-label="Expiring soon">
+                        <AlertTriangle size={13} color="var(--warning)" />
+                      </span>
+                    )}
                   </div>
                 </td>
                 <td><ActiveBadge active={d.is_active} /></td>
