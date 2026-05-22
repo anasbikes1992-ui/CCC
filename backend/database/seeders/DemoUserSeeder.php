@@ -23,6 +23,7 @@ class DemoUserSeeder extends Seeder
                 'preferred_lang' => 'en',
             ]
         );
+        $admin->syncRoles(['admin_super']);
 
         $driverUser = User::firstOrCreate(
             ['phone' => '+94770000002'],
@@ -34,6 +35,7 @@ class DemoUserSeeder extends Seeder
                 'preferred_lang' => 'en',
             ]
         );
+        $driverUser->syncRoles(['driver']);
 
         Driver::firstOrCreate(
             ['user_id' => $driverUser->id],
@@ -44,7 +46,7 @@ class DemoUserSeeder extends Seeder
             ]
         );
 
-        User::firstOrCreate(
+        $customer = User::firstOrCreate(
             ['phone' => '+94770000003'],
             [
                 'full_name' => 'Demo Customer',
@@ -54,5 +56,6 @@ class DemoUserSeeder extends Seeder
                 'preferred_lang' => 'en',
             ]
         );
+        $customer->syncRoles(['customer']);
     }
 }

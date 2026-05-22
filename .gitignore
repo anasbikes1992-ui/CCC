@@ -96,3 +96,6 @@ mobile-driver/lib/config.dart
 # =============================================================================
 .docker-data/
 docker-compose.override.yml
+
+.vercel
+.env*.local
