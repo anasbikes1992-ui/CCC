@@ -13,8 +13,8 @@ return Application::configure(basePath: dirname(__DIR__))
         apiPrefix: 'api',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        $middleware->statefulApi();
-
+        // API auth is bearer-token based across web/mobile clients.
+        // Keep middleware stack stateless (no Sanctum cookie/CSRF stateful pipeline).
         $middleware->throttleApi();
 
         $middleware->alias([

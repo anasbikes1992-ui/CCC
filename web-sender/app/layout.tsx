@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import Link from "next/link";
 import "./globals.css";
 
 const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
@@ -16,7 +17,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="flex min-h-full flex-col">
         <header className="sticky top-0 z-50 border-b border-line bg-surface/90 backdrop-blur-sm">
           <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-4 md:px-8">
-            <a href="/" className="flex items-center gap-3 group">
+            <Link href="/" className="flex items-center gap-3 group">
               <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent text-[9px] font-black tracking-tighter text-white shadow-sm">
                 CCC
               </span>
@@ -28,13 +29,18 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                   Sender Portal
                 </span>
               </div>
-            </a>
-            <nav className="flex items-center gap-5 text-sm text-muted">
+            </Link>
+            <nav className="flex items-center gap-2 text-sm text-muted">
+              <Link href="/" className="rounded-full px-3 py-1.5 transition-colors hover:bg-accent/10 hover:text-foreground">Home</Link>
+              <Link href="/login" className="rounded-full px-3 py-1.5 transition-colors hover:bg-accent/10 hover:text-foreground">Log in</Link>
+              <Link href="/register" className="rounded-full px-3 py-1.5 transition-colors hover:bg-accent/10 hover:text-foreground">Register</Link>
+              <Link href="/dashboard" className="rounded-full px-3 py-1.5 transition-colors hover:bg-accent/10 hover:text-foreground">Dashboard</Link>
+              <Link href="/book" className="rounded-full px-3 py-1.5 transition-colors hover:bg-accent/10 hover:text-foreground">Book</Link>
               <a
                 href={process.env.NEXT_PUBLIC_TRACKING_URL ?? "http://localhost:3001"}
                 target="_blank"
                 rel="noreferrer"
-                className="flex items-center gap-1.5 transition-colors hover:text-foreground"
+                className="flex items-center gap-1.5 rounded-full px-3 py-1.5 transition-colors hover:bg-accent/10 hover:text-foreground"
               >
                 Track Parcel
                 <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden>

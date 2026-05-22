@@ -64,10 +64,10 @@ export interface AuthUser {
   role: string;
 }
 
-export async function login(phone: string, password: string): Promise<{ user: AuthUser; token: string }> {
+export async function login(identifier: string, password: string): Promise<{ user: AuthUser; token: string }> {
   const res = await request<{ success: boolean; data: { user: AuthUser; token: string } }>('/auth/login', {
     method: 'POST',
-    body: JSON.stringify({ phone, password }),
+    body: JSON.stringify({ phone: identifier, password }),
   });
   return res.data;
 }

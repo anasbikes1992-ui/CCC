@@ -20,43 +20,43 @@ export function clearToken() {
 }
 
 export async function fetchApi<T>(endpoint: string, options: RequestInit = {}): Promise<{ success: boolean; data?: T; error?: { message: string } }> {
-  const token = getToken();
-  const headers: Record<string, string> = {
-    "Accept": "application/json",
-  };
-
-  if (options.headers instanceof Headers) {
-    options.headers.forEach((value, key) => {
-      headers[key] = value;
-    });
-  } else if (Array.isArray(options.headers)) {
-    options.headers.forEach(([key, value]) => {
-      headers[key] = value;
-    });
-  } else if (options.headers) {
-    Object.assign(headers, options.headers);
-  }
-  
-  if (token) {
-    headers["Authorization"] = `Bearer ${token}`;
-  }
-
-  if (options.body && typeof options.body === 'string' && !headers['Content-Type']) {
-    headers["Content-Type"] = "application/json";
-  }
-
-  const response = await fetch(`${API_BASE}${endpoint}`, {
-    ...options,
-    headers,
-  });
-
   try {
+    const token = getToken();
+    const headers: Record<string, string> = {
+      Accept: 'application/json',
+    };
+
+    if (options.headers instanceof Headers) {
+      options.headers.forEach((value, key) => {
+        headers[key] = value;
+      });
+    } else if (Array.isArray(options.headers)) {
+      options.headers.forEach(([key, value]) => {
+        headers[key] = value;
+      });
+    } else if (options.headers) {
+      Object.assign(headers, options.headers);
+    }
+
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    if (options.body && typeof options.body === 'string' && !headers['Content-Type']) {
+      headers['Content-Type'] = 'application/json';
+    }
+
+    const response = await fetch(`${API_BASE}${endpoint}`, {
+      ...options,
+      headers,
+    });
+
     const data = await response.json();
     if (!response.ok) {
-      return { success: false, error: data.error || { message: data.message || "An error occurred" } };
+      return { success: false, error: data.error || { message: data.message || 'An error occurred' } };
     }
     return data;
   } catch (err) {
-    return { success: false, error: { message: "Failed to parse API response" } };
+    return { success: false, error: { message: err instanceof Error ? err.message : 'Failed to call API' } };
   }
 }

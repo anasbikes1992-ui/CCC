@@ -16,18 +16,22 @@ export default function LoginPage() {
     setLoading(true);
     setError("");
 
-    const response = await fetchApi<{ token: string }>("/auth/login", {
-      method: "POST",
-      body: JSON.stringify({ phone, password }),
-    });
+    try {
+      const response = await fetchApi<{ token: string }>("/auth/login", {
+        method: "POST",
+        body: JSON.stringify({ phone, password }),
+      });
 
-    setLoading(false);
-
-    if (response.success && response.data?.token) {
-      setToken(response.data.token);
-      router.push("/dashboard");
-    } else {
-      setError(response.error?.message || "Login failed");
+      if (response.success && response.data?.token) {
+        setToken(response.data.token);
+        router.push("/dashboard");
+      } else {
+        setError(response.error?.message || "Login failed");
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Login failed");
+    } finally {
+      setLoading(false);
     }
   }
 

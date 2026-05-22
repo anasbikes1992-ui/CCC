@@ -23,18 +23,22 @@ export default function RegisterPage() {
     setLoading(true);
     setError("");
 
-    const response = await fetchApi<{ token: string }>("/auth/register", {
-      method: "POST",
-      body: JSON.stringify({ name, phone, password, password_confirmation: passwordConfirmation, role: "customer" }),
-    });
+    try {
+      const response = await fetchApi<{ token: string }>("/auth/register", {
+        method: "POST",
+        body: JSON.stringify({ name, phone, password, password_confirmation: passwordConfirmation, role: "customer" }),
+      });
 
-    setLoading(false);
-
-    if (response.success && response.data?.token) {
-      setToken(response.data.token);
-      router.push("/dashboard");
-    } else {
-      setError(response.error?.message || "Registration failed");
+      if (response.success && response.data?.token) {
+        setToken(response.data.token);
+        router.push("/dashboard");
+      } else {
+        setError(response.error?.message || "Registration failed");
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Registration failed");
+    } finally {
+      setLoading(false);
     }
   }
 

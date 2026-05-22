@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { AuthProvider, useAuth } from '@/components/AuthProvider';
+import { login } from '@/lib/api';
 import { Boxes, Lock, Mail, Eye, EyeOff, AlertCircle } from 'lucide-react';
 
 function LoginForm() {
@@ -20,48 +21,18 @@ function LoginForm() {
     setError('');
 
     try {
-      const BASE = process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:8000/api/v1';
+      const { user, token } = await login(email.trim(), password);
 
-      // Try email login via a custom endpoint first, fall back to phone
-      const res = await fetch(`${BASE}/auth/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-        body: JSON.stringify({ phone: email, password }),
-      });
-
-      const json = await res.json();
-
-      if (!res.ok) {
-        // Try treating input as email — look up by email field
-        const res2 = await fetch(`${BASE}/auth/login`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-          body: JSON.stringify({ email, password }),
-        });
-        const json2 = await res2.json();
-        if (!res2.ok) {
-          setError(json2?.error?.message ?? json?.error?.message ?? 'Invalid credentials');
-          setLoading(false);
-          return;
-        }
-        const { user, token } = json2.data;
-        setAuth(user, token);
-        router.push('/');
-        return;
-      }
-
-      const { user, token } = json.data;
-
-      if (!['admin_super', 'ops_admin', 'finance_admin', 'support_admin'].includes(user.role)) {
+      if (!['admin_super', 'super_admin', 'ops_admin', 'finance_admin', 'support_admin'].includes(user.role)) {
         setError('Access denied. Admin accounts only.');
         setLoading(false);
         return;
       }
 
       setAuth(user, token);
-      router.push('/');
-    } catch {
-      setError('Connection error. Is the backend running?');
+      router.replace('/');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Connection error. Is the backend running?');
     } finally {
       setLoading(false);
     }
@@ -192,8 +163,8 @@ function LoginForm() {
 
           <div style={{ marginTop: 20, padding: '10px 12px', borderRadius: 8, background: 'rgba(255,255,255,0.02)', border: '1px solid var(--border)' }}>
             <div style={{ fontSize: 11, color: 'var(--text-muted)', marginBottom: 4, fontWeight: 600 }}>DEMO CREDENTIALS</div>
-            <div style={{ fontSize: 12, color: 'var(--text-secondary)' }}>Email: anasbikes1992@gmail.com</div>
-            <div style={{ fontSize: 12, color: 'var(--text-secondary)' }}>Password: 123456</div>
+            <div style={{ fontSize: 12, color: 'var(--text-secondary)' }}>Email or Phone: anasbikes1992@gmail.com / +94771350035</div>
+            <div style={{ fontSize: 12, color: 'var(--text-secondary)' }}>Password: Aa123456</div>
           </div>
         </div>
 

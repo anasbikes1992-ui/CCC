@@ -42,7 +42,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     localStorage.setItem('ccc_admin_token', t);
     localStorage.setItem('ccc_admin_user', JSON.stringify(u));
     // Set cookie for middleware
-    document.cookie = `ccc_admin_token=${t}; path=/; max-age=86400`;
+    document.cookie = `ccc_admin_token=${encodeURIComponent(t)}; path=/; max-age=86400; samesite=lax`;
   };
 
   const clearAuth = () => {
@@ -50,7 +50,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setToken(null);
     localStorage.removeItem('ccc_admin_token');
     localStorage.removeItem('ccc_admin_user');
-    document.cookie = 'ccc_admin_token=; path=/; max-age=0';
+    document.cookie = 'ccc_admin_token=; path=/; max-age=0; samesite=lax';
   };
 
   return (
