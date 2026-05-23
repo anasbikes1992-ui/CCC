@@ -16,7 +16,8 @@ class DashboardScreen extends StatefulWidget {
   State<DashboardScreen> createState() => _DashboardScreenState();
 }
 
-class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProviderStateMixin {
+class _DashboardScreenState extends State<DashboardScreen>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
   int _selectedIndex = 0;
 
@@ -57,10 +58,7 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
     ];
 
     return Scaffold(
-      body: IndexedStack(
-        index: _selectedIndex,
-        children: screens,
-      ),
+      body: IndexedStack(index: _selectedIndex, children: screens),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
         onTap: _onNavTap,
@@ -68,7 +66,10 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
         unselectedItemColor: AppTheme.textSecondary,
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.add_box_rounded), label: 'Book'),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.add_box_rounded),
+            label: 'Book',
+          ),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
         ],
       ),
@@ -84,8 +85,14 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
             builder: (context, auth, _) => Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Hello, ${auth.user?.name ?? "User"}!', style: const TextStyle(fontSize: 20)),
-                Text('Track & manage your parcels', style: Theme.of(context).textTheme.bodySmall),
+                Text(
+                  'Hello, ${auth.user?.name ?? "User"}!',
+                  style: const TextStyle(fontSize: 20),
+                ),
+                Text(
+                  'Track & manage your parcels',
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
               ],
             ),
           ),
@@ -118,22 +125,49 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('Quick Actions', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
+        const Text(
+          'Quick Actions',
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+        ),
         const SizedBox(height: AppTheme.spaceMd),
         Row(
           children: [
-            Expanded(child: _buildActionCard('Book Parcel', Icons.add_box_rounded, AppTheme.primary, () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) => const BookParcelScreen()));
-            })),
+            Expanded(
+              child: _buildActionCard(
+                'Book Parcel',
+                Icons.add_box_rounded,
+                AppTheme.primary,
+                () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const BookParcelScreen(),
+                    ),
+                  );
+                },
+              ),
+            ),
             const SizedBox(width: AppTheme.spaceMd),
-            Expanded(child: _buildActionCard('Track', Icons.qr_code_scanner, AppTheme.secondary, () {})),
+            Expanded(
+              child: _buildActionCard(
+                'Track',
+                Icons.qr_code_scanner,
+                AppTheme.secondary,
+                () {},
+              ),
+            ),
           ],
         ),
       ],
     );
   }
 
-  Widget _buildActionCard(String label, IconData icon, Color color, VoidCallback onTap) {
+  Widget _buildActionCard(
+    String label,
+    IconData icon,
+    Color color,
+    VoidCallback onTap,
+  ) {
     return Card(
       child: InkWell(
         onTap: onTap,
@@ -144,7 +178,10 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
             children: [
               Container(
                 padding: const EdgeInsets.all(AppTheme.spaceMd),
-                decoration: BoxDecoration(color: color.withValues(alpha: 0.1), shape: BoxShape.circle),
+                decoration: BoxDecoration(
+                  color: color.withValues(alpha: 0.1),
+                  shape: BoxShape.circle,
+                ),
                 child: Icon(icon, color: color, size: 32),
               ),
               const SizedBox(height: AppTheme.spaceSm),
@@ -160,14 +197,20 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('My Parcels', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
+        const Text(
+          'My Parcels',
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+        ),
         const SizedBox(height: AppTheme.spaceMd),
         TabBar(
           controller: _tabController,
           labelColor: AppTheme.primary,
           unselectedLabelColor: AppTheme.textSecondary,
           indicatorColor: AppTheme.primary,
-          tabs: const [Tab(text: 'Active'), Tab(text: 'Delivered')],
+          tabs: const [
+            Tab(text: 'Active'),
+            Tab(text: 'Delivered'),
+          ],
         ),
         const SizedBox(height: AppTheme.spaceMd),
         Consumer<ParcelProvider>(
@@ -175,7 +218,7 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
             if (provider.isLoading) {
               return const Center(child: CircularProgressIndicator());
             }
-            
+
             return SizedBox(
               height: 400,
               child: TabBarView(
@@ -200,7 +243,10 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
           children: [
             Icon(Icons.inbox_outlined, size: 64, color: AppTheme.textLight),
             const SizedBox(height: AppTheme.spaceMd),
-            Text('No parcels found', style: TextStyle(color: AppTheme.textLight)),
+            Text(
+              'No parcels found',
+              style: TextStyle(color: AppTheme.textLight),
+            ),
           ],
         ),
       );
@@ -215,7 +261,8 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => ParcelDetailsScreen(parcelId: parcels[index].id),
+                builder: (context) =>
+                    ParcelDetailsScreen(parcelId: parcels[index].id),
               ),
             );
           },

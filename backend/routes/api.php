@@ -51,6 +51,11 @@ Route::prefix('v1')->group(function () {
             Route::get('/trips/{id}/parcels', [TripController::class, 'parcels']);
             Route::post('/parcels/{idOrNumber}/scan', [ScanController::class, 'scan']);
             Route::post('/parcels/{idOrNumber}/deliver', [ScanController::class, 'deliver']);
+            
+            // Delivery with OTP verification
+            Route::post('/delivery/verify-otp', [\App\Http\Controllers\Api\V1\DeliveryController::class, 'verifyOTP']);
+            Route::post('/delivery/regenerate-otp', [\App\Http\Controllers\Api\V1\DeliveryController::class, 'regenerateOTP']);
+            Route::post('/delivery/complete', [\App\Http\Controllers\Api\V1\DeliveryController::class, 'completeDelivery']);
         });
 
         // Admin

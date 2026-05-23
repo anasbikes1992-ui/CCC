@@ -20,7 +20,7 @@ class Parcel {
   final DateTime? deliveredAt;
   final DateTime createdAt;
   final List<StatusEvent> statusHistory;
-  
+
   Parcel({
     required this.id,
     required this.parcelNumber,
@@ -44,7 +44,7 @@ class Parcel {
     required this.createdAt,
     this.statusHistory = const [],
   });
-  
+
   factory Parcel.fromJson(Map<String, dynamic> json) {
     return Parcel(
       id: json['id'],
@@ -55,9 +55,13 @@ class Parcel {
       routeDisplay: json['route_display'] ?? '',
       size: json['size'],
       weight: (json['weight'] as num).toDouble(),
-      length: json['length'] != null ? (json['length'] as num).toDouble() : null,
+      length: json['length'] != null
+          ? (json['length'] as num).toDouble()
+          : null,
       width: json['width'] != null ? (json['width'] as num).toDouble() : null,
-      height: json['height'] != null ? (json['height'] as num).toDouble() : null,
+      height: json['height'] != null
+          ? (json['height'] as num).toDouble()
+          : null,
       baseFee: json['base_fee'],
       finalFee: json['final_fee'],
       senderName: json['sender_name'],
@@ -65,14 +69,18 @@ class Parcel {
       receiverName: json['receiver_name'],
       receiverPhone: json['receiver_phone'],
       tripId: json['trip_id'],
-      deliveredAt: json['delivered_at'] != null ? DateTime.parse(json['delivered_at']) : null,
+      deliveredAt: json['delivered_at'] != null
+          ? DateTime.parse(json['delivered_at'])
+          : null,
       createdAt: DateTime.parse(json['created_at']),
-      statusHistory: (json['status_history'] as List?)
-          ?.map((e) => StatusEvent.fromJson(e))
-          .toList() ?? [],
+      statusHistory:
+          (json['status_history'] as List?)
+              ?.map((e) => StatusEvent.fromJson(e))
+              .toList() ??
+          [],
     );
   }
-  
+
   String get statusColor {
     switch (status) {
       case 'DELIVERED':
@@ -87,9 +95,10 @@ class Parcel {
         return 'info';
     }
   }
-  
+
   bool get isDelivered => status == 'DELIVERED';
-  bool get canCancel => !['DELIVERED', 'CANCELLED', 'OUT_FOR_DELIVERY'].contains(status);
+  bool get canCancel =>
+      !['DELIVERED', 'CANCELLED', 'OUT_FOR_DELIVERY'].contains(status);
 }
 
 class StatusEvent {
@@ -98,7 +107,7 @@ class StatusEvent {
   final DateTime timestamp;
   final String? location;
   final String? notes;
-  
+
   StatusEvent({
     required this.status,
     required this.statusLabel,
@@ -106,7 +115,7 @@ class StatusEvent {
     this.location,
     this.notes,
   });
-  
+
   factory StatusEvent.fromJson(Map<String, dynamic> json) {
     return StatusEvent(
       status: json['status'],

@@ -11,17 +11,17 @@ class AppTheme {
   static const Color success = Color(0xFF10B981);
   static const Color warning = Color(0xFFF59E0B);
   static const Color info = Color(0xFF3B82F6);
-  
+
   static const Color textPrimary = Color(0xFF111827);
   static const Color textSecondary = Color(0xFF6B7280);
   static const Color textLight = Color(0xFF9CA3AF);
-  
+
   static const Color background = Color(0xFFF9FAFB);
   static const Color surface = Color(0xFFFFFFFF);
   static const Color surfaceLight = Color(0xFFF3F4F6);
   static const Color border = Color(0xFFE5E7EB);
   static const Color borderLight = Color(0xFFF3F4F6);
-  
+
   // Spacing
   static const double spaceXs = 4.0;
   static const double spaceSm = 8.0;
@@ -29,14 +29,14 @@ class AppTheme {
   static const double spaceLg = 24.0;
   static const double spaceXl = 32.0;
   static const double spaceXxl = 48.0;
-  
+
   // Border Radius
   static const double radiusSm = 8.0;
   static const double radiusMd = 12.0;
   static const double radiusLg = 16.0;
   static const double radiusXl = 24.0;
   static const double radiusFull = 999.0;
-  
+
   // Shadows
   static final List<BoxShadow> shadowSm = [
     BoxShadow(
@@ -45,7 +45,7 @@ class AppTheme {
       offset: const Offset(0, 1),
     ),
   ];
-  
+
   static final List<BoxShadow> shadowMd = [
     BoxShadow(
       color: Colors.black.withValues(alpha: 0.1),
@@ -53,7 +53,7 @@ class AppTheme {
       offset: const Offset(0, 2),
     ),
   ];
-  
+
   static final List<BoxShadow> shadowLg = [
     BoxShadow(
       color: Colors.black.withValues(alpha: 0.15),
@@ -61,7 +61,7 @@ class AppTheme {
       offset: const Offset(0, 4),
     ),
   ];
-  
+
   // Theme Data
   static ThemeData get lightTheme {
     return ThemeData(
@@ -77,21 +77,69 @@ class AppTheme {
       ),
       textTheme: GoogleFonts.interTextTheme(
         const TextTheme(
-          displayLarge: TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: textPrimary),
-          displayMedium: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: textPrimary),
-          displaySmall: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: textPrimary),
-          headlineLarge: TextStyle(fontSize: 20, fontWeight: FontWeight.w600, color: textPrimary),
-          headlineMedium: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: textPrimary),
-          headlineSmall: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: textPrimary),
-          titleLarge: TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: textPrimary),
-          titleMedium: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: textPrimary),
-          titleSmall: TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: textPrimary),
+          displayLarge: TextStyle(
+            fontSize: 32,
+            fontWeight: FontWeight.bold,
+            color: textPrimary,
+          ),
+          displayMedium: TextStyle(
+            fontSize: 28,
+            fontWeight: FontWeight.bold,
+            color: textPrimary,
+          ),
+          displaySmall: TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+            color: textPrimary,
+          ),
+          headlineLarge: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.w600,
+            color: textPrimary,
+          ),
+          headlineMedium: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+            color: textPrimary,
+          ),
+          headlineSmall: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            color: textPrimary,
+          ),
+          titleLarge: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w500,
+            color: textPrimary,
+          ),
+          titleMedium: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+            color: textPrimary,
+          ),
+          titleSmall: TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.w500,
+            color: textPrimary,
+          ),
           bodyLarge: TextStyle(fontSize: 16, color: textPrimary),
           bodyMedium: TextStyle(fontSize: 14, color: textSecondary),
           bodySmall: TextStyle(fontSize: 12, color: textSecondary),
-          labelLarge: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: textPrimary),
-          labelMedium: TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: textSecondary),
-          labelSmall: TextStyle(fontSize: 10, fontWeight: FontWeight.w500, color: textLight),
+          labelLarge: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+            color: textPrimary,
+          ),
+          labelMedium: TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.w500,
+            color: textSecondary,
+          ),
+          labelSmall: TextStyle(
+            fontSize: 10,
+            fontWeight: FontWeight.w500,
+            color: textLight,
+          ),
         ),
       ),
       appBarTheme: AppBarTheme(
@@ -119,7 +167,9 @@ class AppTheme {
           foregroundColor: Colors.white,
           elevation: 0,
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(radiusMd)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(radiusMd),
+          ),
           textStyle: GoogleFonts.inter(
             fontSize: 16,
             fontWeight: FontWeight.w600,
@@ -131,7 +181,9 @@ class AppTheme {
           foregroundColor: primary,
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
           side: const BorderSide(color: primary, width: 1.5),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(radiusMd)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(radiusMd),
+          ),
           textStyle: GoogleFonts.inter(
             fontSize: 16,
             fontWeight: FontWeight.w600,
@@ -158,14 +210,8 @@ class AppTheme {
           borderRadius: BorderRadius.circular(radiusMd),
           borderSide: const BorderSide(color: error),
         ),
-        labelStyle: GoogleFonts.inter(
-          fontSize: 14,
-          color: textSecondary,
-        ),
-        hintStyle: GoogleFonts.inter(
-          fontSize: 14,
-          color: textLight,
-        ),
+        labelStyle: GoogleFonts.inter(fontSize: 14, color: textSecondary),
+        hintStyle: GoogleFonts.inter(fontSize: 14, color: textLight),
       ),
       dividerTheme: const DividerThemeData(
         color: border,

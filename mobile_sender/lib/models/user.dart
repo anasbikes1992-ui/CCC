@@ -5,7 +5,7 @@ class User {
   final String email;
   final String? profilePhoto;
   final DateTime createdAt;
-  
+
   User({
     required this.id,
     required this.name,
@@ -14,7 +14,7 @@ class User {
     this.profilePhoto,
     required this.createdAt,
   });
-  
+
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
       id: json['id'],
@@ -25,7 +25,7 @@ class User {
       createdAt: DateTime.parse(json['created_at']),
     );
   }
-  
+
   Map<String, dynamic> toJson() {
     return {
       'id': id,

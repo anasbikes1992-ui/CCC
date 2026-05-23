@@ -32,6 +32,12 @@ return [
             'language' => 'en',
             // params: 1: Parcel Number, 2: Destination Hub, 3: Collection Point, 4: Tracking URL
         ],
+        'ready_for_pickup' => [
+            'name' => 'ready_for_pickup',
+            'recipients' => ['receiver'],
+            'language' => 'en',
+            // params: 1: Receiver Name, 2: Sender Name, 3: Parcel Number, 4: Size, 5: Weight, 6: Origin, 7: Destination, 8: Pickup Location, 9: OTP, 10: Tracking URL
+        ],
         'out_for_delivery' => [
             'name' => 'out_for_delivery',
             'recipients' => ['receiver'],

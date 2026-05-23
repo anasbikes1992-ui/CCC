@@ -12,6 +12,13 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
         apiPrefix: 'api',
     )
+    ->withEvents(discover: [
+        __DIR__.'/../app/Listeners',
+    ], listen: [
+        \App\Events\ParcelStatusChanged::class => [
+            \App\Listeners\SendParcelNotifications::class,
+        ],
+    ])
     ->withMiddleware(function (Middleware $middleware) {
         // API auth is bearer-token based across web/mobile clients.
         // Keep middleware stack stateless (no Sanctum cookie/CSRF stateful pipeline).

@@ -9,9 +9,7 @@ class ProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Profile'),
-      ),
+      appBar: AppBar(title: const Text('Profile')),
       body: Consumer<AuthProvider>(
         builder: (context, auth, _) {
           final user = auth.user;
@@ -27,7 +25,9 @@ class ProfileScreen extends StatelessWidget {
               const SizedBox(height: AppTheme.spaceLg),
               ElevatedButton(
                 onPressed: () => _logout(context, auth),
-                style: ElevatedButton.styleFrom(backgroundColor: AppTheme.error),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppTheme.error,
+                ),
                 child: const Text('Logout'),
               ),
             ],
@@ -46,11 +46,18 @@ class ProfileScreen extends StatelessWidget {
             backgroundColor: AppTheme.primary.withValues(alpha: 0.1),
             child: Text(
               name[0].toUpperCase(),
-              style: const TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: AppTheme.primary),
+              style: const TextStyle(
+                fontSize: 32,
+                fontWeight: FontWeight.bold,
+                color: AppTheme.primary,
+              ),
             ),
           ),
           const SizedBox(height: AppTheme.spaceMd),
-          Text(name, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+          Text(
+            name,
+            style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+          ),
           const SizedBox(height: AppTheme.spaceXs),
           Text(phone, style: const TextStyle(color: AppTheme.textSecondary)),
         ],
@@ -66,9 +73,18 @@ class ProfileScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(label, style: const TextStyle(fontSize: 12, color: AppTheme.textSecondary)),
+            Text(
+              label,
+              style: const TextStyle(
+                fontSize: 12,
+                color: AppTheme.textSecondary,
+              ),
+            ),
             const SizedBox(height: 4),
-            Text(value, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
+            Text(
+              value,
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+            ),
           ],
         ),
       ),
@@ -82,7 +98,10 @@ class ProfileScreen extends StatelessWidget {
         title: const Text('Logout'),
         content: const Text('Are you sure you want to logout?'),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
             style: ElevatedButton.styleFrom(backgroundColor: AppTheme.error),

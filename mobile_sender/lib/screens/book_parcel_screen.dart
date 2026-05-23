@@ -6,12 +6,8 @@ class BookParcelScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Book New Parcel'),
-      ),
-      body: const Center(
-        child: Text('Book Parcel Screen - Coming Soon'),
-      ),
+      appBar: AppBar(title: const Text('Book New Parcel')),
+      body: const Center(child: Text('Book Parcel Screen - Coming Soon')),
     );
   }
 }

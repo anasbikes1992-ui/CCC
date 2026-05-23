@@ -6,7 +6,7 @@ class Route {
   final int distance;
   final bool isActive;
   final Map<String, int> pricingMatrix; // size -> price
-  
+
   Route({
     required this.id,
     required this.code,
@@ -16,7 +16,7 @@ class Route {
     required this.isActive,
     required this.pricingMatrix,
   });
-  
+
   factory Route.fromJson(Map<String, dynamic> json) {
     return Route(
       id: json['id'],
@@ -28,9 +28,9 @@ class Route {
       pricingMatrix: Map<String, int>.from(json['pricing_matrix'] ?? {}),
     );
   }
-  
+
   String get displayName => '$originHub ↔ $destinationHub';
-  
+
   int getPriceForSize(String size) {
     return pricingMatrix[size] ?? 0;
   }

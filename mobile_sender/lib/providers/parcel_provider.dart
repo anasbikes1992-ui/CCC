@@ -4,25 +4,27 @@ import '../services/api_service.dart';
 
 class ParcelProvider with ChangeNotifier {
   final ApiService _apiService = ApiService();
-  
+
   List<Parcel> _parcels = [];
   Parcel? _currentParcel;
   bool _isLoading = false;
   String? _error;
-  
+
   List<Parcel> get parcels => _parcels;
   Parcel? get currentParcel => _currentParcel;
   bool get isLoading => _isLoading;
   String? get error => _error;
-  
-  List<Parcel> get activeParcels => _parcels.where((p) => !p.isDelivered).toList();
-  List<Parcel> get deliveredParcels => _parcels.where((p) => p.isDelivered).toList();
-  
+
+  List<Parcel> get activeParcels =>
+      _parcels.where((p) => !p.isDelivered).toList();
+  List<Parcel> get deliveredParcels =>
+      _parcels.where((p) => p.isDelivered).toList();
+
   Future<void> fetchParcels({String? status}) async {
     _isLoading = true;
     _error = null;
     notifyListeners();
-    
+
     try {
       _parcels = await _apiService.getParcels(status: status, limit: 100);
       _isLoading = false;
@@ -33,12 +35,12 @@ class ParcelProvider with ChangeNotifier {
       notifyListeners();
     }
   }
-  
+
   Future<bool> fetchParcelDetails(String parcelId) async {
     _isLoading = true;
     _error = null;
     notifyListeners();
-    
+
     try {
       _currentParcel = await _apiService.getParcelDetails(parcelId);
       _isLoading = false;
@@ -51,12 +53,12 @@ class ParcelProvider with ChangeNotifier {
       return false;
     }
   }
-  
+
   Future<bool> trackParcel(String parcelNumber) async {
     _isLoading = true;
     _error = null;
     notifyListeners();
-    
+
     try {
       _currentParcel = await _apiService.trackParcel(parcelNumber);
       _isLoading = false;
@@ -69,12 +71,12 @@ class ParcelProvider with ChangeNotifier {
       return false;
     }
   }
-  
+
   Future<bool> cancelParcel(String parcelId, String reason) async {
     _isLoading = true;
     _error = null;
     notifyListeners();
-    
+
     try {
       await _apiService.cancelParcel(parcelId, reason);
       await fetchParcels(); // Refresh list
@@ -88,12 +90,16 @@ class ParcelProvider with ChangeNotifier {
       return false;
     }
   }
-  
-  Future<bool> rateDelivery(String parcelId, int rating, String? feedback) async {
+
+  Future<bool> rateDelivery(
+    String parcelId,
+    int rating,
+    String? feedback,
+  ) async {
     _isLoading = true;
     _error = null;
     notifyListeners();
-    
+
     try {
       await _apiService.rateDelivery(parcelId, rating, feedback);
       await fetchParcelDetails(parcelId); // Refresh details
@@ -107,7 +113,7 @@ class ParcelProvider with ChangeNotifier {
       return false;
     }
   }
-  
+
   void clearCurrentParcel() {
     _currentParcel = null;
     notifyListeners();

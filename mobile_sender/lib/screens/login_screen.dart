@@ -31,7 +31,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
     final success = await authProvider.login(phone);
-    
+
     if (success && mounted) {
       setState(() => _otpSent = true);
       _showSuccess('OTP sent to $phone');
@@ -43,7 +43,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Future<void> _verifyOtp() async {
     final phone = _phoneController.text.trim();
     final otp = _otpController.text.trim();
-    
+
     if (otp.isEmpty) {
       _showError('Please enter OTP');
       return;
@@ -51,7 +51,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
     final success = await authProvider.verifyOtp(phone, otp);
-    
+
     if (success && mounted) {
       Navigator.of(context).pushReplacementNamed('/dashboard');
     } else if (mounted) {
@@ -107,7 +107,11 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
             borderRadius: BorderRadius.circular(AppTheme.radiusLg),
           ),
-          child: const Icon(Icons.local_shipping_rounded, size: 48, color: Colors.white),
+          child: const Icon(
+            Icons.local_shipping_rounded,
+            size: 48,
+            color: Colors.white,
+          ),
         ),
         const SizedBox(height: AppTheme.spaceMd),
         const Text(
@@ -157,14 +161,15 @@ class _LoginScreenState extends State<LoginScreen> {
     return Consumer<AuthProvider>(
       builder: (context, auth, _) {
         return ElevatedButton(
-          onPressed: auth.isLoading
-              ? null
-              : (_otpSent ? _verifyOtp : _sendOtp),
+          onPressed: auth.isLoading ? null : (_otpSent ? _verifyOtp : _sendOtp),
           child: auth.isLoading
               ? const SizedBox(
                   height: 20,
                   width: 20,
-                  child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: Colors.white,
+                  ),
                 )
               : Text(_otpSent ? 'Verify OTP' : 'Send OTP'),
         );
@@ -173,9 +178,6 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Widget _buildResendButton() {
-    return TextButton(
-      onPressed: _sendOtp,
-      child: const Text('Resend OTP'),
-    );
+    return TextButton(onPressed: _sendOtp, child: const Text('Resend OTP'));
   }
 }

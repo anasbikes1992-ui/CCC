@@ -27,14 +27,21 @@ class ParcelCard extends StatelessWidget {
                   const Spacer(),
                   Text(
                     parcel.parcelNumber,
-                    style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 12),
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 12,
+                    ),
                   ),
                 ],
               ),
               const SizedBox(height: AppTheme.spaceMd),
               Row(
                 children: [
-                  const Icon(Icons.location_on_outlined, size: 16, color: AppTheme.textSecondary),
+                  const Icon(
+                    Icons.location_on_outlined,
+                    size: 16,
+                    color: AppTheme.textSecondary,
+                  ),
                   const SizedBox(width: AppTheme.spaceXs),
                   Expanded(
                     child: Text(
@@ -47,12 +54,19 @@ class ParcelCard extends StatelessWidget {
               const SizedBox(height: AppTheme.spaceSm),
               Row(
                 children: [
-                  const Icon(Icons.person_outline, size: 16, color: AppTheme.textSecondary),
+                  const Icon(
+                    Icons.person_outline,
+                    size: 16,
+                    color: AppTheme.textSecondary,
+                  ),
                   const SizedBox(width: AppTheme.spaceXs),
                   Expanded(
                     child: Text(
                       '${parcel.senderName} → ${parcel.receiverName}',
-                      style: const TextStyle(fontSize: 12, color: AppTheme.textSecondary),
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: AppTheme.textSecondary,
+                      ),
                     ),
                   ),
                 ],
@@ -63,11 +77,17 @@ class ParcelCard extends StatelessWidget {
                 children: [
                   Text(
                     'Size: ${parcel.size} • ${parcel.weight}kg',
-                    style: const TextStyle(fontSize: 12, color: AppTheme.textSecondary),
+                    style: const TextStyle(
+                      fontSize: 12,
+                      color: AppTheme.textSecondary,
+                    ),
                   ),
                   Text(
                     'LKR ${NumberFormat('#,###').format(parcel.finalFee)}',
-                    style: const TextStyle(fontWeight: FontWeight.w600, color: AppTheme.primary),
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w600,
+                      color: AppTheme.primary,
+                    ),
                   ),
                 ],
               ),
@@ -81,7 +101,7 @@ class ParcelCard extends StatelessWidget {
   Widget _buildStatusBadge() {
     Color bgColor;
     Color textColor;
-    
+
     switch (parcel.statusColor) {
       case 'success':
         bgColor = AppTheme.success.withValues(alpha: 0.1);
