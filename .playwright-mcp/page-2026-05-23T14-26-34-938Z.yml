@@ -1,0 +1,27 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e3]:
+    - generic [ref=e4]:
+      - img [ref=e6]
+      - heading "CCC Admin Portal" [level=1] [ref=e16]
+      - paragraph [ref=e17]: Colombo Cargo Connect — Operations Dashboard
+    - generic [ref=e18]:
+      - generic [ref=e19]:
+        - generic [ref=e20]:
+          - generic [ref=e21]: Email or Phone
+          - generic [ref=e22]:
+            - img [ref=e23]
+            - textbox "anasbikes1992@gmail.com" [ref=e26]
+        - generic [ref=e27]:
+          - generic [ref=e28]: Password
+          - generic [ref=e29]:
+            - img [ref=e30]
+            - textbox "••••••" [ref=e33]
+            - button [ref=e34] [cursor=pointer]:
+              - img [ref=e35]
+        - button "Sign In" [ref=e38] [cursor=pointer]
+      - generic [ref=e39]:
+        - generic [ref=e40]: DEMO CREDENTIALS
+        - generic [ref=e41]: "Email: anasbikes1992@gmail.com"
+        - generic [ref=e42]: "Password: 123456"
+    - paragraph [ref=e43]: Colombo Cargo Connect © 2026 · Admin v1.0
+  - alert [ref=e44]

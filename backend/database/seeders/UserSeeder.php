@@ -5,8 +5,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
-use App\Enums\UserRole;
-use Illuminate\Support\Str;
+use App\Models\Driver;
 
 class UserSeeder extends Seeder
 {
@@ -16,97 +15,121 @@ class UserSeeder extends Seeder
     public function run(): void
     {
         // Admin Users
-        User::create([
-            'id' => Str::uuid(),
-            'name' => 'Super Admin',
-            'email' => 'admin@ccc.lk',
-            'phone' => '+94771234567',
-            'password' => Hash::make('password'),
-            'role' => UserRole::SUPER_ADMIN->value,
-            'email_verified_at' => now(),
-            'phone_verified_at' => now(),
-        ]);
+        $admin = User::firstOrCreate(
+            ['phone' => '+94771234567'],
+            [
+                'full_name' => 'Super Admin',
+                'email' => 'admin@ccc.lk',
+                'password_hash' => Hash::make('password'),
+                'role' => 'admin_super',
+                'preferred_lang' => 'en',
+            ]
+        );
+        $admin->syncRoles(['admin_super']);
 
-        User::create([
-            'id' => Str::uuid(),
-            'name' => 'Operations Admin',
-            'email' => 'ops@ccc.lk',
-            'phone' => '+94771234568',
-            'password' => Hash::make('password'),
-            'role' => UserRole::OPS_ADMIN->value,
-            'email_verified_at' => now(),
-            'phone_verified_at' => now(),
-        ]);
+        $finance = User::firstOrCreate(
+            ['phone' => '+94771234568'],
+            [
+                'full_name' => 'Finance Admin',
+                'email' => 'finance@ccc.lk',
+                'password_hash' => Hash::make('password'),
+                'role' => 'finance_admin',
+                'preferred_lang' => 'en',
+            ]
+        );
+        $finance->syncRoles(['finance_admin']);
 
-        // Test Sender (Customer)
-        User::create([
-            'id' => Str::uuid(),
-            'name' => 'John Sender',
-            'email' => 'sender@test.com',
-            'phone' => '+94771111111',
-            'password' => Hash::make('password'),
-            'role' => UserRole::CUSTOMER->value,
-            'email_verified_at' => now(),
-            'phone_verified_at' => now(),
-        ]);
+        // Customer Users (Senders)
+        User::firstOrCreate(
+            ['phone' => '+94777777001'],
+            [
+                'full_name' => 'Test Sender',
+                'email' => 'sender@test.com',
+                'password_hash' => Hash::make('password'),
+                'role' => 'customer',
+                'preferred_lang' => 'en',
+            ]
+        );
 
-        User::create([
-            'id' => Str::uuid(),
-            'name' => 'Jane Sender',
-            'email' => 'sender2@test.com',
-            'phone' => '+94772222222',
-            'password' => Hash::make('password'),
-            'role' => UserRole::CUSTOMER->value,
-            'email_verified_at' => now(),
-            'phone_verified_at' => now(),
-        ]);
+        User::firstOrCreate(
+            ['phone' => '+94777777002'],
+            [
+                'full_name' => 'Test Sender 2',
+                'email' => 'sender2@test.com',
+                'password_hash' => Hash::make('password'),
+                'role' => 'customer',
+                'preferred_lang' => 'en',
+            ]
+        );
 
-        // Test Drivers
-        $driver1 = User::create([
-            'id' => Str::uuid(),
-            'name' => 'Driver Kumar',
-            'email' => 'driver@test.com',
-            'phone' => '+94773333333',
-            'password' => Hash::make('password'),
-            'role' => UserRole::DRIVER->value,
-            'email_verified_at' => now(),
-            'phone_verified_at' => now(),
-        ]);
+        // Driver Users
+        $driver1User = User::firstOrCreate(
+            ['phone' => '+94777777003'],
+            [
+                'full_name' => 'Test Driver',
+                'email' => 'driver@test.com',
+                'password_hash' => Hash::make('password'),
+                'role' => 'driver',
+                'preferred_lang' => 'en',
+            ]
+        );
+        $driver1User->syncRoles(['driver']);
 
-        $driver2 = User::create([
-            'id' => Str::uuid(),
-            'name' => 'Driver Silva',
-            'email' => 'driver2@test.com',
-            'phone' => '+94774444444',
-            'password' => Hash::make('password'),
-            'role' => UserRole::DRIVER->value,
-            'email_verified_at' => now(),
-            'phone_verified_at' => now(),
-        ]);
+        Driver::firstOrCreate(
+            ['user_id' => $driver1User->id],
+            [
+                'license_number' => 'DL-TEST-0001',
+                'license_expires_at' => now()->addYears(2),
+                'is_active' => true,
+            ]
+        );
 
-        // Hub Staff
-        User::create([
-            'id' => Str::uuid(),
-            'name' => 'Hub Staff Colombo',
-            'email' => 'hub.colombo@ccc.lk',
-            'phone' => '+94775555555',
-            'password' => Hash::make('password'),
-            'role' => UserRole::HUB_STAFF->value,
-            'email_verified_at' => now(),
-            'phone_verified_at' => now(),
-        ]);
+        $driver2User = User::firstOrCreate(
+            ['phone' => '+94777777004'],
+            [
+                'full_name' => 'Test Driver 2',
+                'email' => 'driver2@test.com',
+                'password_hash' => Hash::make('password'),
+                'role' => 'driver',
+                'preferred_lang' => 'en',
+            ]
+        );
+        $driver2User->syncRoles(['driver']);
 
-        User::create([
-            'id' => Str::uuid(),
-            'name' => 'Hub Staff Kandy',
-            'email' => 'hub.kandy@ccc.lk',
-            'phone' => '+94776666666',
-            'password' => Hash::make('password'),
-            'role' => UserRole::HUB_STAFF->value,
-            'email_verified_at' => now(),
-            'phone_verified_at' => now(),
-        ]);
+        Driver::firstOrCreate(
+            ['user_id' => $driver2User->id],
+            [
+                'license_number' => 'DL-TEST-0002',
+                'license_expires_at' => now()->addYears(2),
+                'is_active' => true,
+            ]
+        );
 
-        $this->command->info('✓ Created 8 users (2 admins, 2 senders, 2 drivers, 2 hub staff)');
+        // Hub Staff Users
+        $hubColombo = User::firstOrCreate(
+            ['phone' => '+94777777005'],
+            [
+                'full_name' => 'Colombo Hub Staff',
+                'email' => 'hub.colombo@ccc.lk',
+                'password_hash' => Hash::make('password'),
+                'role' => 'hub_staff',
+                'preferred_lang' => 'en',
+            ]
+        );
+        $hubColombo->syncRoles(['hub_staff']);
+
+        $hubKandy = User::firstOrCreate(
+            ['phone' => '+94777777006'],
+            [
+                'full_name' => 'Kandy Hub Staff',
+                'email' => 'hub.kandy@ccc.lk',
+                'password_hash' => Hash::make('password'),
+                'role' => 'hub_staff',
+                'preferred_lang' => 'en',
+            ]
+        );
+        $hubKandy->syncRoles(['hub_staff']);
+
+        $this->command->info('✓ Created 8 test users successfully');
     }
 }

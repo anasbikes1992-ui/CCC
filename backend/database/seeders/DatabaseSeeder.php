@@ -16,6 +16,9 @@ class DatabaseSeeder extends Seeder
             HubSeeder::class,
             RouteSeeder::class,
             PackageSizeSeeder::class,
+            UserSeeder::class,        // Test users for E2E testing
+            PricingSeeder::class,     // Pricing matrix for routes
+            TestDataSeeder::class,    // Sample parcels for testing
             LorrySeeder::class,
             PricingMatrixSeeder::class,
             DemoUserSeeder::class,

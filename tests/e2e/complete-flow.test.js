@@ -10,17 +10,17 @@ const CONFIG = {
   baseUrl: 'https://web-sender.vercel.app',
   adminUrl: 'https://web-admin-rho-sepia.vercel.app',
   trackingUrl: 'https://web-tracking-sigma.vercel.app',
-  apiUrl: 'https://ccc-production.up.railway.app',
+  apiUrl: 'https://ccc-production-30a5.up.railway.app',
   
   // Test credentials
   sender: {
     email: 'sender@test.com',
-    phone: '+94771111111',
+    phone: '+94777777001',
     password: 'password'
   },
   driver: {
     email: 'driver@test.com',
-    phone: '+94773333333',
+    phone: '+94777777003',
     password: 'password'
   },
   admin: {

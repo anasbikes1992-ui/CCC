@@ -1,0 +1,38 @@
+- generic [active] [ref=e1]:
+  - banner [ref=e2]:
+    - generic [ref=e3]:
+      - link "CCC Colombo Cargo Connect Sender Portal" [ref=e4] [cursor=pointer]:
+        - /url: /
+        - generic [ref=e5]: CCC
+        - generic [ref=e6]:
+          - generic [ref=e7]: Colombo Cargo Connect
+          - generic [ref=e8]: Sender Portal
+      - navigation [ref=e9]:
+        - link "Track Parcel" [ref=e10] [cursor=pointer]:
+          - /url: https://web-tracking-sigma.vercel.app
+          - text: Track Parcel
+          - img [ref=e11]
+  - main [ref=e14]:
+    - generic [ref=e15]:
+      - heading "Welcome Back" [level=1] [ref=e16]
+      - paragraph [ref=e17]: Log in to manage your shipments.
+    - generic [ref=e18]:
+      - generic [ref=e19]:
+        - generic [ref=e20]:
+          - text: Phone Number
+          - textbox "Phone Number" [ref=e21]:
+            - /placeholder: "+94712345678"
+        - generic [ref=e22]:
+          - text: Password
+          - textbox "Password" [ref=e23]:
+            - /placeholder: ••••••••
+      - button "Log In" [ref=e24]
+      - paragraph [ref=e25]:
+        - text: Don't have an account?
+        - link "Register" [ref=e26] [cursor=pointer]:
+          - /url: /register
+  - contentinfo [ref=e27]:
+    - generic [ref=e28]:
+      - generic [ref=e29]: Colombo Cargo Connect — Hub-to-Hub Logistics
+      - generic [ref=e30]: Sri Lanka 🇱🇰
+  - alert [ref=e31]

@@ -1,0 +1,41 @@
+- generic [ref=e1]:
+  - banner [ref=e2]:
+    - generic [ref=e3]:
+      - link "CCC Colombo Cargo Connect Parcel Tracking" [ref=e4] [cursor=pointer]:
+        - /url: /
+        - generic [ref=e5]: CCC
+        - generic [ref=e6]:
+          - generic [ref=e7]: Colombo Cargo Connect
+          - generic [ref=e8]: Parcel Tracking
+      - navigation [ref=e9]:
+        - link "Book Parcel" [ref=e10] [cursor=pointer]:
+          - /url: http://localhost:3000
+          - text: Book Parcel
+          - img [ref=e11]
+  - main [ref=e14]:
+    - generic [ref=e15]:
+      - img [ref=e17]
+      - paragraph [ref=e22]: Colombo Cargo Connect
+      - heading "Track Your Shipment" [level=1] [ref=e23]
+      - paragraph [ref=e24]: Enter your parcel number for live status, hub scans, and delivery progress.
+    - generic [ref=e25]:
+      - generic [ref=e26]:
+        - textbox "CCC-YYYYMMDD-NNNNNN-X" [active] [ref=e27]
+        - button "Track Parcel" [disabled] [ref=e28]
+      - generic [ref=e29]:
+        - generic [ref=e30]: Live status updates
+        - generic [ref=e32]: Hub-to-hub tracking
+        - generic [ref=e34]: Delivery confirmation
+    - generic [ref=e36]:
+      - generic [ref=e37]: CMB
+      - generic [ref=e38]: KDY
+      - generic [ref=e39]: GAL
+      - generic [ref=e40]: MTR
+      - generic [ref=e41]: JFN
+      - generic [ref=e42]: KLN
+      - generic [ref=e43]: + more hubs
+  - contentinfo [ref=e44]:
+    - generic [ref=e45]:
+      - generic [ref=e46]: Colombo Cargo Connect — Hub-to-Hub Logistics
+      - generic [ref=e47]: Sri Lanka 🇱🇰
+  - alert [ref=e48]
