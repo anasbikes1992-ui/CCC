@@ -95,12 +95,12 @@ export default function PricingPage() {
           <table className="data-table">
             <thead>
               <tr>
-                <th>Size</th>
-                <th>Base Price</th>
-                <th>Doorstep Pickup</th>
-                <th>Doorstep Drop</th>
-                <th>Express</th>
-                <th>Actions</th>
+                <th scope="col">Size</th>
+                <th scope="col">Base Price</th>
+                <th scope="col">Doorstep Pickup</th>
+                <th scope="col">Doorstep Drop</th>
+                <th scope="col">Express</th>
+                <th scope="col">Actions</th>
               </tr>
             </thead>
             <tbody>

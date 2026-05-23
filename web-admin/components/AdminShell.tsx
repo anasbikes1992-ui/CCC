@@ -9,6 +9,7 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
       <div style={{ display: 'flex', minHeight: '100vh' }}>
         <Sidebar />
         <main
+          role="main"
           className="main-content"
           style={{
             marginLeft: 240,

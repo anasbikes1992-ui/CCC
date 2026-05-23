@@ -112,12 +112,12 @@ export default function TicketsPage() {
           <table className="w-full text-sm">
             <thead className="bg-slate-50 border-b border-slate-200">
               <tr>
-                <th className="text-left px-4 py-3 font-semibold text-slate-600">Subject</th>
-                <th className="text-left px-4 py-3 font-semibold text-slate-600 hidden md:table-cell">Customer</th>
-                <th className="text-left px-4 py-3 font-semibold text-slate-600">Priority</th>
-                <th className="text-left px-4 py-3 font-semibold text-slate-600">Status</th>
-                <th className="text-left px-4 py-3 font-semibold text-slate-600 hidden lg:table-cell">Opened</th>
-                <th className="px-4 py-3"></th>
+                <th scope="col" className="text-left px-4 py-3 font-semibold text-slate-600">Subject</th>
+                <th scope="col" className="text-left px-4 py-3 font-semibold text-slate-600 hidden md:table-cell">Customer</th>
+                <th scope="col" className="text-left px-4 py-3 font-semibold text-slate-600">Priority</th>
+                <th scope="col" className="text-left px-4 py-3 font-semibold text-slate-600">Status</th>
+                <th scope="col" className="text-left px-4 py-3 font-semibold text-slate-600 hidden lg:table-cell">Opened</th>
+                <th scope="col" className="px-4 py-3"></th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">

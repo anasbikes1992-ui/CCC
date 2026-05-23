@@ -1,7 +1,16 @@
 # 🚛 Colombo Cargo Connect (CCC) — Development Tracker
 
 **Project Start Date:** May 1, 2026  
-**Status:** Phase 6 Complete — Ready for Deployment
+**Current Status:** Core Complete — Production Deployment Phase  
+**Last Updated:** May 23, 2026
+
+---
+
+## 🎯 Current Focus
+
+**Phase:** Advanced Development & Production Deployment  
+**Priority:** Phase A (Production Infrastructure Setup)  
+**Reference:** See [advancedev.md](./advancedev.md) for complete advanced development roadmap
 
 ---
 
@@ -294,6 +303,69 @@ d:\CCC\
 
 ---
 
+## � Production Deployment Documentation
+
+**Core Development Complete!** All Phases 0-6 finished. Now moving to advanced development and production readiness.
+
+### Master Roadmap
+- **[advancedev.md](./advancedev.md)** — Complete phase-based advanced development roadmap (Phases A-H)
+  - Phase A: Production Infrastructure Setup
+  - Phase B: Testing & Quality Assurance
+  - Phase C: Missing Feature Implementation
+  - Phase D: Security Hardening
+  - Phase E: Performance Optimization
+  - Phase F: Monitoring & Operations
+  - Phase G: Documentation & Polish
+  - Phase H: Go-Live Preparation
+
+### Operational Documentation
+- **[docs/RUNBOOK.md](./docs/RUNBOOK.md)** — Complete operations runbook
+  - Architecture diagrams
+  - Deployment procedures (Railway, Vercel, mobile)
+  - Common tasks (create route, schedule trip, update pricing, etc.)
+  - Troubleshooting guide (API errors, login failures, scan issues, etc.)
+  - Emergency procedures (outages, data breaches, payment failures)
+  - Environment variables reference
+  - Quick reference commands
+
+- **[docs/EXTERNAL_SERVICES_SETUP.md](./docs/EXTERNAL_SERVICES_SETUP.md)** — Step-by-step external service setup
+  - Supabase production setup (database + storage)
+  - Railway production deployment
+  - Vercel deployment (4 web apps)
+  - WhatsApp Cloud API integration
+  - Notify.lk SMS setup
+  - WebxPay payment gateway
+  - Firebase Cloud Messaging
+  - Sentry error tracking
+  - Better Stack uptime monitoring
+  - Domain & DNS configuration
+  - Cost estimates (~$180-200/month fixed costs)
+
+- **[docs/GO_LIVE_CHECKLIST.md](./docs/GO_LIVE_CHECKLIST.md)** — Production launch readiness checklist
+  - Business readiness (legal, financial, operations, marketing)
+  - Infrastructure checklist (database, backend, web apps, mobile)
+  - Testing checklist (unit, E2E, performance, security, cross-browser)
+  - Monitoring & operations setup
+  - Documentation completeness
+  - Launch day procedures
+  - Rollback plan
+
+### Current Status
+- ✅ **Core Features:** Complete (Phases 0-6)
+- 🔄 **Production Infrastructure:** In Progress (Phase A)
+- ⏳ **External Integrations:** Pending setup (Phase C)
+- ⏳ **Testing & QA:** Coverage measurement blocked by PCOV installation (Phase B)
+- ⏳ **Monitoring:** Not yet configured (Phase F)
+
+### Immediate Next Steps
+1. Install PCOV for test coverage measurement (Phase B.1)
+2. Set up Supabase production database (Phase A.1)
+3. Configure Railway production deployment (Phase A.2)
+4. Complete WhatsApp Business verification (Phase C.1)
+5. Set up WebxPay merchant account (Phase C.2)
+
+---
+
 ## 💬 Questions for First Session
 
 1. Which platform should launch first: web sender or driver app?
@@ -304,6 +376,6 @@ d:\CCC\
 
 ---
 
-**Last Updated:** May 20, 2026  
-**Author:** Project Initialization  
-**Status:** Phase 6 Complete — next step: deploy (Supabase + Railway + Vercel)
+**Last Updated:** May 23, 2026  
+**Author:** Advanced Development Phase  
+**Status:** Core Complete (Phases 0-6) — Production Deployment In Progress (Phase A)

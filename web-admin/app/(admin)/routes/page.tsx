@@ -49,7 +49,7 @@ export default function RoutesPage() {
 
       <div className="glass">
         <table className="data-table">
-          <thead><tr><th>Code</th><th>Route</th><th>Duration</th><th>Trips</th><th>Status</th><th>Actions</th></tr></thead>
+          <thead><tr><th scope="col">Code</th><th scope="col">Route</th><th scope="col">Duration</th><th scope="col">Trips</th><th scope="col">Status</th><th scope="col">Actions</th></tr></thead>
           <tbody>
             {loading ? <tr><td colSpan={6} style={{ textAlign: 'center', padding: 40, color: 'var(--text-muted)' }}>Loading...</td></tr>
             : routes.length === 0 ? <tr><td colSpan={6}><EmptyState icon={<RouteIcon />} title="No routes" /></td></tr>

@@ -41,26 +41,28 @@ export default function DashboardPage() {
 
   return (
     <main className="min-h-screen bg-background pb-20">
-      <header className="bg-surface sticky top-0 z-10 border-b border-line shadow-sm">
+      <header className="bg-surface sticky top-0 z-10 border-b border-line shadow-sm" role="banner">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4">
           <div className="flex items-center gap-2 text-accent">
-            <Truck className="h-6 w-6" />
+            <Truck className="h-6 w-6" aria-hidden="true" />
             <span className="text-xl font-bold text-foreground">CCC</span>
           </div>
           <div className="flex items-center gap-4">
             <button
               onClick={handleLogout}
+              aria-label="Sign out of your account"
               className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-muted transition hover:bg-muted/10 hover:text-foreground"
             >
-              <LogOut className="h-4 w-4" />
-              Sign Out
+              <LogOut className="h-4 w-4" aria-hidden="true" />
+              <span>Sign Out</span>
             </button>
             <Link
               href="/book"
+              aria-label="Book a new parcel shipment"
               className="flex items-center gap-2 rounded-xl bg-accent px-4 py-2 text-sm font-semibold text-white shadow-md transition hover:brightness-110 active:scale-95"
             >
-              <Plus className="h-4 w-4" />
-              Book Parcel
+              <Plus className="h-4 w-4" aria-hidden="true" />
+              <span>Book Parcel</span>
             </Link>
           </div>
         </div>
@@ -79,8 +81,8 @@ export default function DashboardPage() {
             <div className="h-8 w-8 animate-spin rounded-full border-4 border-accent border-t-transparent"></div>
           </div>
         ) : parcels.length === 0 ? (
-          <div className="flex flex-col items-center justify-center rounded-3xl border border-dashed border-line bg-surface py-24 text-center">
-            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-accent/10 text-accent mb-4">
+          <div className="flex flex-col items-center justify-center rounded-3xl border border-dashed border-line bg-surface py-24 text-center" role="status">
+            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-accent/10 text-accent mb-4" aria-hidden="true">
               <Package className="h-8 w-8" />
             </div>
             <h2 className="text-xl font-semibold">No shipments yet</h2>
@@ -89,10 +91,11 @@ export default function DashboardPage() {
             </p>
             <Link
               href="/book"
+              aria-label="Book your first parcel shipment"
               className="mt-6 flex items-center gap-2 rounded-xl bg-accent px-6 py-3 font-semibold text-white shadow-md transition hover:brightness-110 active:scale-95"
             >
-              <Plus className="h-5 w-5" />
-              Book Your First Parcel
+              <Plus className="h-5 w-5" aria-hidden="true" />
+              <span>Book Your First Parcel</span>
             </Link>
           </div>
         ) : (

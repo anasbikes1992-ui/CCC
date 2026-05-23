@@ -75,14 +75,14 @@ export default function ParcelsPage() {
           <table className="data-table">
             <thead>
               <tr>
-                <th>Parcel #</th>
-                <th>Customer</th>
-                <th>Route</th>
-                <th>Size</th>
-                <th>Status</th>
-                <th>Total</th>
-                <th>Created</th>
-                <th style={{ width: 80 }}>Actions</th>
+                <th scope="col">Parcel #</th>
+                <th scope="col">Customer</th>
+                <th scope="col">Route</th>
+                <th scope="col">Size</th>
+                <th scope="col">Status</th>
+                <th scope="col">Total</th>
+                <th scope="col">Created</th>
+                <th scope="col" style={{ width: 80 }}>Actions</th>
               </tr>
             </thead>
             <tbody>

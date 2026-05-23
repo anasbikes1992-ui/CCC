@@ -109,10 +109,10 @@ export default function DashboardPage() {
       {/* Charts row 1 */}
       <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: 18, marginBottom: 18 }}>
         {/* 7-day trend */}
-        <div className="glass" style={{ padding: '20px 22px' }}>
+        <section className="glass" style={{ padding: '20px 22px' }} aria-labelledby="chart-7day-heading">
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 20 }}>
-            <BarChart3 size={16} color="var(--accent)" />
-            <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)' }}>7-Day Booking Trend</span>
+            <BarChart3 size={16} color="var(--accent)" aria-hidden="true" />
+            <h2 id="chart-7day-heading" style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)' }}>7-Day Booking Trend</h2>
           </div>
           <ResponsiveContainer width="100%" height={200}>
             <AreaChart data={stats?.last_7_days ?? []}>
@@ -137,13 +137,34 @@ export default function DashboardPage() {
               <Area type="monotone" dataKey="revenue" stroke="#10b981" fill="url(#colorRevenue)" name="Revenue"  strokeWidth={2} />
             </AreaChart>
           </ResponsiveContainer>
-        </div>
+          <details style={{ marginTop: 16, fontSize: 12 }}>
+            <summary style={{ cursor: 'pointer', color: 'var(--accent)', fontWeight: 600 }}>View data table alternative</summary>
+            <table style={{ marginTop: 12, width: '100%', fontSize: 11, borderCollapse: 'collapse' }}>
+              <thead>
+                <tr style={{ borderBottom: '1px solid var(--border)' }}>
+                  <th scope="col" style={{ textAlign: 'left', padding: '8px 4px' }}>Date</th>
+                  <th scope="col" style={{ textAlign: 'right', padding: '8px 4px' }}>Bookings</th>
+                  <th scope="col" style={{ textAlign: 'right', padding: '8px 4px' }}>Revenue (LKR)</th>
+                </tr>
+              </thead>
+              <tbody>
+                {(stats?.last_7_days ?? []).map((row) => (
+                  <tr key={row.date} style={{ borderBottom: '1px solid var(--border-light)' }}>
+                    <td style={{ padding: '6px 4px' }}>{row.date}</td>
+                    <td style={{ textAlign: 'right', padding: '6px 4px' }}>{row.count}</td>
+                    <td style={{ textAlign: 'right', padding: '6px 4px' }}>{formatCurrency(row.revenue)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </details>
+        </section>
 
         {/* Status distribution */}
-        <div className="glass" style={{ padding: '20px 22px' }}>
+        <section className="glass" style={{ padding: '20px 22px' }} aria-labelledby="chart-status-heading">
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
-            <Activity size={16} color="var(--accent)" />
-            <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)' }}>Parcel Status Mix</span>
+            <Activity size={16} color="var(--accent)" aria-hidden="true" />
+            <h2 id="chart-status-heading" style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)' }}>Parcel Status Mix</h2>
           </div>
           <ResponsiveContainer width="100%" height={160}>
             <PieChart>
@@ -163,15 +184,34 @@ export default function DashboardPage() {
               </div>
             ))}
           </div>
-        </div>
+          <details style={{ marginTop: 12, fontSize: 12 }}>
+            <summary style={{ cursor: 'pointer', color: 'var(--accent)', fontWeight: 600 }}>View data table alternative</summary>
+            <table style={{ marginTop: 12, width: '100%', fontSize: 11, borderCollapse: 'collapse' }}>
+              <thead>
+                <tr style={{ borderBottom: '1px solid var(--border)' }}>
+                  <th scope="col" style={{ textAlign: 'left', padding: '8px 4px' }}>Status</th>
+                  <th scope="col" style={{ textAlign: 'right', padding: '8px 4px' }}>Count</th>
+                </tr>
+              </thead>
+              <tbody>
+                {statusPieData.map((row) => (
+                  <tr key={row.name} style={{ borderBottom: '1px solid var(--border-light)' }}>
+                    <td style={{ padding: '6px 4px' }}>{row.name.replace(/_/g, ' ')}</td>
+                    <td style={{ textAlign: 'right', padding: '6px 4px' }}>{row.value}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </details>
+        </section>
       </div>
 
       {/* Recent Parcels */}
-      <div className="glass" style={{ padding: '20px 22px' }}>
+      <section className="glass" style={{ padding: '20px 22px' }} aria-labelledby="recent-parcels-heading">
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <TrendingUp size={16} color="var(--accent)" />
-            <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)' }}>Recent Parcels</span>
+            <TrendingUp size={16} color="var(--accent)" aria-hidden="true" />
+            <h2 id="recent-parcels-heading" style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)' }}>Recent Parcels</h2>
           </div>
           <a href="/parcels" style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 12, color: 'var(--accent-light)', textDecoration: 'none' }}>
             View all <ArrowUpRight size={12} />
@@ -180,12 +220,12 @@ export default function DashboardPage() {
         <table className="data-table">
           <thead>
             <tr>
-              <th>Parcel #</th>
-              <th>Customer</th>
-              <th>Route</th>
-              <th>Status</th>
-              <th>Value</th>
-              <th>Created</th>
+              <th scope="col">Parcel #</th>
+              <th scope="col">Customer</th>
+              <th scope="col">Route</th>
+              <th scope="col">Status</th>
+              <th scope="col">Value</th>
+              <th scope="col">Created</th>
             </tr>
           </thead>
           <tbody>
@@ -203,7 +243,7 @@ export default function DashboardPage() {
             ))}
           </tbody>
         </table>
-      </div>
+      </section>
     </div>
   );
 }

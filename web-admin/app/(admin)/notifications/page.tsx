@@ -75,13 +75,13 @@ export default function NotificationsPage() {
         <table className="data-table">
           <thead>
             <tr>
-              <th>Channel</th>
-              <th>Template</th>
-              <th>Recipient</th>
-              <th>Parcel</th>
-              <th>Status</th>
-              <th>Sent At</th>
-              <th>Error</th>
+              <th scope="col">Channel</th>
+              <th scope="col">Template</th>
+              <th scope="col">Recipient</th>
+              <th scope="col">Parcel</th>
+              <th scope="col">Status</th>
+              <th scope="col">Sent At</th>
+              <th scope="col">Error</th>
             </tr>
           </thead>
           <tbody>

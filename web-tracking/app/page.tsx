@@ -15,12 +15,25 @@ export default function Home() {
   }
 
   return (
-    <main className="mx-auto flex w-full max-w-4xl flex-1 flex-col justify-center gap-8 px-4 py-12 md:px-8 animate-fade-up">
+    <>
+      {/* Skip to main content link */}
+      <a 
+        href="#main-content" 
+        className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:left-4 focus:top-4 focus:px-4 focus:py-2 focus:bg-accent focus:text-white focus:rounded-lg"
+      >
+        Skip to main content
+      </a>
+
+      <main id="main-content" tabIndex={-1} className="mx-auto flex w-full max-w-4xl flex-1 flex-col justify-center gap-8 px-4 py-12 md:px-8 animate-fade-up">
 
       {/* Hero */}
       <div className="text-center">
-        <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-accent/10 ring-1 ring-accent/15">
-          <svg width="32" height="32" viewBox="0 0 32 32" fill="none" aria-hidden>
+        <div 
+          className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-accent/10 ring-1 ring-accent/15"
+          role="img"
+          aria-label="Colombo Cargo Connect logo - delivery truck icon"
+        >
+          <svg width="32" height="32" viewBox="0 0 32 32" fill="none" aria-hidden="true">
             <rect x="3" y="8" width="18" height="14" rx="2" stroke="currentColor" strokeWidth="1.8" className="text-accent"/>
             <path d="M21 12h4l4 4v6h-8V12Z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" className="text-accent"/>
             <circle cx="9" cy="24" r="2.5" stroke="currentColor" strokeWidth="1.8" className="text-accent"/>
@@ -35,54 +48,78 @@ export default function Home() {
       </div>
 
       {/* Search Card */}
-      <section className="rounded-3xl border border-line bg-surface p-8 shadow-[0_8px_40px_rgba(16,42,67,0.1)]">
-        <form onSubmit={onSubmit} className="flex flex-col gap-4 sm:flex-row">
-          <input
-            value={parcelNumber}
-            onChange={(event) => setParcelNumber(event.target.value)}
-            placeholder="CCC-YYYYMMDD-NNNNNN-X"
-            autoFocus
-            className="flex-1 rounded-xl border border-line bg-white px-4 py-3 font-mono text-sm outline-none ring-accent/20 transition placeholder:text-muted/40 focus:ring-2"
-          />
+      <section className="rounded-3xl border border-line bg-surface p-8 shadow-[0_8px_40px_rgba(16,42,67,0.1)]" aria-labelledby="track-heading">
+        <h2 id="track-heading" className="sr-only">Track your parcel</h2>
+        <form onSubmit={onSubmit} className="flex flex-col gap-4 sm:flex-row" role="search">
+          <div className="flex-1">
+            <label htmlFor="parcel-number" className="sr-only">
+              Parcel tracking number
+            </label>
+            <input
+              id="parcel-number"
+              name="parcelNumber"
+              type="text"
+              value={parcelNumber}
+              onChange={(event) => setParcelNumber(event.target.value)}
+              placeholder="CCC-YYYYMMDD-NNNNNN-X"
+              autoFocus
+              aria-required="true"
+              aria-describedby="parcel-format-hint"
+              className="w-full rounded-xl border border-line bg-white px-4 py-3 font-mono text-sm outline-none transition placeholder:text-muted/40 focus:outline-2 focus:outline-accent focus:outline-offset-0 focus:ring-4 focus:ring-accent/20"
+            />
+            <span id="parcel-format-hint" className="sr-only">
+              Format: CCC dash year month day dash 6 digits dash check digit
+            </span>
+          </div>
           <button
             type="submit"
             disabled={!parcelNumber.trim()}
-            className="rounded-xl bg-accent px-6 py-3 text-sm font-semibold text-white shadow-sm transition hover:brightness-110 active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-50"
+            className="rounded-xl bg-accent px-6 py-3 text-sm font-semibold text-white shadow-sm transition hover:brightness-110 active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-50 focus:outline-2 focus:outline-accent focus:outline-offset-2 min-h-[44px]"
           >
             Track Parcel
           </button>
         </form>
 
-        <div className="mt-6 flex flex-wrap items-center gap-6 text-xs text-muted">
-          <span className="flex items-center gap-1.5">
-            <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse-dot" />
+        <div className="mt-6 flex flex-wrap items-center gap-6 text-xs text-muted" role="list" aria-label="Tracking features">
+          <span className="flex items-center gap-1.5" role="listitem">
+            <span className="relative flex h-3 w-3" aria-hidden="true">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+              <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500" />
+            </span>
+            <span className="sr-only">Feature 1:</span>
             Live status updates
           </span>
-          <span className="flex items-center gap-1.5">
-            <span className="h-1.5 w-1.5 rounded-full bg-accent-2" />
+          <span className="flex items-center gap-1.5" role="listitem">
+            <span className="h-3 w-3 rounded-full bg-accent-2" aria-hidden="true" />
+            <span className="sr-only">Feature 2:</span>
             Hub-to-hub tracking
           </span>
-          <span className="flex items-center gap-1.5">
-            <span className="h-1.5 w-1.5 rounded-full bg-accent" />
+          <span className="flex items-center gap-1.5" role="listitem">
+            <span className="h-3 w-3 rounded-full bg-accent" aria-hidden="true" />
+            <span className="sr-only">Feature 3:</span>
             Delivery confirmation
           </span>
         </div>
       </section>
 
       {/* Route network hint */}
-      <div className="flex flex-wrap justify-center gap-3 text-xs">
-        {["CMB", "KDY", "GAL", "MTR", "JFN", "KLN"].map((hub) => (
-          <span
-            key={hub}
-            className="rounded-xl border border-line bg-surface px-3 py-1.5 font-mono font-semibold text-muted"
-          >
-            {hub}
+      <nav aria-label="Supported hub locations">
+        <div className="flex flex-wrap justify-center gap-3 text-xs">
+          {["CMB", "KDY", "GAL", "MTR", "JFN", "KLN"].map((hub) => (
+            <span
+              key={hub}
+              className="rounded-xl border border-line bg-surface px-3 py-1.5 font-mono font-semibold text-muted"
+              role="listitem"
+            >
+              {hub}
+            </span>
+          ))}
+          <span className="rounded-xl border border-dashed border-line bg-transparent px-3 py-1.5 text-muted/50">
+            + more hubs
           </span>
-        ))}
-        <span className="rounded-xl border border-dashed border-line bg-transparent px-3 py-1.5 text-muted/50">
-          + more hubs
-        </span>
-      </div>
+        </div>
+      </nav>
     </main>
+    </>
   );
 }

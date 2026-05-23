@@ -83,7 +83,7 @@ export default function UsersPage() {
       <div className="glass">
         <table className="data-table">
           <thead>
-            <tr><th>Name</th><th>Phone</th><th>Email</th><th>Role</th><th>Parcels</th><th>Joined</th><th>Actions</th></tr>
+            <tr><th scope="col">Name</th><th scope="col">Phone</th><th scope="col">Email</th><th scope="col">Role</th><th scope="col">Parcels</th><th scope="col">Joined</th><th scope="col">Actions</th></tr>
           </thead>
           <tbody>
             {loading ? (

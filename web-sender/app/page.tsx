@@ -48,7 +48,7 @@ export default function LandingPage() {
                     </div>
                     <ArrowRight size={16} className="mt-1 text-muted transition group-hover:translate-x-1 group-hover:text-foreground" />
                   </div>
-                  <h2 className="mt-4 text-sm font-bold text-foreground">{item.label}</h2>
+                  <p className="mt-4 text-sm font-bold text-foreground">{item.label}</p>
                   <p className="mt-1 text-sm leading-6 text-muted">{item.desc}</p>
                 </Link>
               );
@@ -69,8 +69,8 @@ export default function LandingPage() {
           { title: 'No admin login link', text: 'Operations access stays separate from the public sender flow.' },
         ].map((card) => (
           <div key={card.title} className="rounded-2xl border border-line bg-surface p-5 shadow-sm">
-            <ShieldCheck className="h-5 w-5 text-accent" />
-            <h3 className="mt-4 text-sm font-bold text-foreground">{card.title}</h3>
+            <ShieldCheck className="h-5 w-5 text-accent" aria-hidden="true" />
+            <h2 className="mt-4 text-sm font-bold text-foreground">{card.title}</h2>
             <p className="mt-2 text-sm leading-6 text-muted">{card.text}</p>
           </div>
         ))}

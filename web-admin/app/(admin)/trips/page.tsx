@@ -132,14 +132,14 @@ export default function TripsPage() {
           <table className="data-table">
             <thead>
               <tr>
-                <th>Trip Code</th>
-                <th>Route</th>
-                <th>Departure</th>
-                <th>Driver</th>
-                <th>Lorry</th>
-                <th>Capacity</th>
-                <th>Status</th>
-                <th>Actions</th>
+                <th scope="col">Trip Code</th>
+                <th scope="col">Route</th>
+                <th scope="col">Departure</th>
+                <th scope="col">Driver</th>
+                <th scope="col">Lorry</th>
+                <th scope="col">Capacity</th>
+                <th scope="col">Status</th>
+                <th scope="col">Actions</th>
               </tr>
             </thead>
             <tbody>

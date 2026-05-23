@@ -102,7 +102,7 @@ export default function DriversPage() {
 
       <div className="glass">
         <table className="data-table">
-          <thead><tr><th>Name</th><th>Phone</th><th>License #</th><th>License Expires</th><th>Status</th><th>Actions</th></tr></thead>
+          <thead><tr><th scope="col">Name</th><th scope="col">Phone</th><th scope="col">License #</th><th scope="col">License Expires</th><th scope="col">Status</th><th scope="col">Actions</th></tr></thead>
           <tbody>
             {loading ? <tr><td colSpan={6} style={{ textAlign: 'center', padding: 40, color: 'var(--text-muted)' }}>Loading...</td></tr>
             : drivers.length === 0 ? <tr><td colSpan={6}><EmptyState icon={<UserCog />} title="No drivers" /></td></tr>

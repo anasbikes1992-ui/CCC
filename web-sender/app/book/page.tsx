@@ -196,6 +196,7 @@ export default function BookParcelPage() {
                     step="0.1"
                     value={formData.weight_kg}
                     onChange={(e) => updateForm("weight_kg", e.target.value)}
+                    autoComplete="off"
                     className="w-full rounded-xl border border-line bg-white px-4 py-3 outline-none ring-accent/20 focus:ring-2"
                   />
                 </label>
@@ -231,6 +232,7 @@ export default function BookParcelPage() {
                         rows={2}
                         value={formData.pickup_address}
                         onChange={(e) => updateForm("pickup_address", e.target.value)}
+                        autoComplete="street-address"
                         className="w-full rounded-xl border border-line bg-white px-3 py-2 outline-none ring-accent/20 focus:ring-2"
                       />
                     </label>
@@ -258,6 +260,7 @@ export default function BookParcelPage() {
                         rows={2}
                         value={formData.drop_address}
                         onChange={(e) => updateForm("drop_address", e.target.value)}
+                        autoComplete="street-address"
                         className="w-full rounded-xl border border-line bg-white px-3 py-2 outline-none ring-accent/20 focus:ring-2"
                       />
                     </label>
@@ -275,6 +278,7 @@ export default function BookParcelPage() {
                       required
                       value={formData.receiver_name}
                       onChange={(e) => updateForm("receiver_name", e.target.value)}
+                      autoComplete="name"
                       className="w-full rounded-xl border border-line bg-white px-3 py-2 outline-none ring-accent/20 focus:ring-2"
                     />
                   </label>
@@ -286,6 +290,7 @@ export default function BookParcelPage() {
                       placeholder="+94712345678"
                       value={formData.receiver_phone}
                       onChange={(e) => updateForm("receiver_phone", e.target.value)}
+                      autoComplete="tel"
                       className="w-full rounded-xl border border-line bg-white px-3 py-2 outline-none ring-accent/20 focus:ring-2"
                     />
                   </label>
