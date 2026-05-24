@@ -23,6 +23,7 @@ class _BookParcelScreenState extends State<BookParcelScreen> {
   List<Map<String, dynamic>> _sizes = [];
   bool _isLoading = false;
   bool _loadingData = true;
+  String? _loadError;
   double? _estimatedPrice;
 
   @override
@@ -43,30 +44,60 @@ class _BookParcelScreenState extends State<BookParcelScreen> {
   }
 
   Future<void> _loadData() async {
+    setState(() {
+      _loadingData = true;
+      _loadError = null;
+    });
+
     try {
       final routesResponse = await ApiService.get('/customer/routes');
       final sizesResponse = await ApiService.get('/customer/package-sizes');
 
+      final routes = _extractList(routesResponse);
+      final sizes = _extractList(sizesResponse);
+
+      String? loadError;
+      if (routes.isEmpty || sizes.isEmpty) {
+        final routeError = routesResponse['error']?['message']?.toString();
+        final sizeError = sizesResponse['error']?['message']?.toString();
+        final details = [routeError, sizeError].whereType<String>().where((e) => e.isNotEmpty).join(' | ');
+        loadError = details.isNotEmpty
+            ? details
+            : 'Route/package data not available yet. Please try again.';
+      }
+
       if (mounted) {
         setState(() {
-          _routes = List<Map<String, dynamic>>.from(
-            routesResponse['success'] == true
-                ? (routesResponse['data'] ?? [])
-                : [],
-          );
-          _sizes = List<Map<String, dynamic>>.from(
-            sizesResponse['success'] == true
-                ? (sizesResponse['data'] ?? [])
-                : [],
-          );
+          _routes = routes;
+          _sizes = sizes;
+          _loadError = loadError;
           _loadingData = false;
         });
       }
     } catch (e) {
       if (mounted) {
-        setState(() => _loadingData = false);
+        setState(() {
+          _loadingData = false;
+          _loadError = 'Failed to load route/package data. Check connection and try again.';
+        });
       }
     }
+  }
+
+  List<Map<String, dynamic>> _extractList(Map<String, dynamic>? response) {
+    if (response == null) return [];
+
+    final data = response['data'];
+    if (data is List) {
+      return data.whereType<Map>().map((item) => Map<String, dynamic>.from(item)).toList();
+    }
+
+    if (data is Map && data['data'] is List) {
+      final nested = data['data'] as List;
+      return nested.whereType<Map>().map((item) => Map<String, dynamic>.from(item)).toList();
+    }
+
+    return [];
   }
 
   Future<void> _calculatePrice() async {
@@ -157,6 +188,32 @@ class _BookParcelScreenState extends State<BookParcelScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              if (_loadError != null) ...[
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.orange.shade50,
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: Colors.orange.shade200),
+                  ),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Icon(Icons.warning_amber_rounded, color: Colors.orange),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          _loadError!,
+                          style: TextStyle(color: Colors.orange.shade900),
+                        ),
+                      ),
+                      TextButton(onPressed: _loadData, child: const Text('Retry')),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 16),
+              ],
+
               Text(
                 'Receiver Information',
                 style: Theme.of(
@@ -206,14 +263,17 @@ class _BookParcelScreenState extends State<BookParcelScreen> {
                   border: OutlineInputBorder(),
                 ),
                 items: _routes.map<DropdownMenuItem<String>>((route) {
+                  final routeCode = (route['code'] ?? route['id'] ?? '').toString();
                   return DropdownMenuItem<String>(
-                    value: route['code'].toString(),
+                    value: routeCode,
                     child: Text(
-                      '${route['code']} - ${route['display_name'] ?? route['name']}',
+                      '$routeCode - ${route['display_name'] ?? route['name'] ?? 'Route'}',
                     ),
                   );
                 }).toList(),
-                onChanged: (value) {
+                onChanged: _routes.isEmpty
+                    ? null
+                    : (value) {
                   setState(() => _selectedRoute = value);
                   _calculatePrice();
                 },
@@ -228,14 +288,17 @@ class _BookParcelScreenState extends State<BookParcelScreen> {
                   border: OutlineInputBorder(),
                 ),
                 items: _sizes.map<DropdownMenuItem<String>>((size) {
+                  final sizeCode = (size['code'] ?? size['id'] ?? '').toString();
                   return DropdownMenuItem<String>(
-                    value: size['code'].toString(),
+                    value: sizeCode,
                     child: Text(
-                      '${size['code']} - ${size['display_name'] ?? size['name']} (${size['max_weight_kg']}kg)',
+                      '$sizeCode - ${size['display_name'] ?? size['name'] ?? 'Size'} (${size['max_weight_kg'] ?? '-'}kg)',
                     ),
                   );
                 }).toList(),
-                onChanged: (value) {
+                onChanged: _sizes.isEmpty
+                    ? null
+                    : (value) {
                   setState(() => _selectedSize = value);
                   _calculatePrice();
                 },
@@ -255,8 +318,9 @@ class _BookParcelScreenState extends State<BookParcelScreen> {
                 validator: (v) {
                   if (v == null || v.trim().isEmpty) return 'Required';
                   final weight = double.tryParse(v.trim());
-                  if (weight == null || weight <= 0)
+                  if (weight == null || weight <= 0) {
                     return 'Enter valid weight';
+                  }
                   return null;
                 },
                 onChanged: (_) => _calculatePrice(),

@@ -64,6 +64,18 @@ Sri Lanka lacks a structured, transparent inter-city parcel delivery service tha
 
 ---
 
+## 🌐 Live Web Endpoints
+
+| Surface | URL |
+|--------|-----|
+| **Main Landing (root project)** | `https://ccc-admin-jade.vercel.app` |
+| **Sender Portal** | `https://web-sender.vercel.app` |
+| **Public Tracking** | `https://web-tracking-sigma.vercel.app` |
+| **Hub Console** | `https://ccc-hub-seven.vercel.app` |
+| **Admin Console** | `https://web-admin-rho-sepia.vercel.app` |
+
+---
+
 ## 📁 Project Structure
 
 ```

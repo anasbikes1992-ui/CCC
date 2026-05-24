@@ -21,7 +21,7 @@ const APP_LINKS = [
   },
   {
     title: "Public Tracking",
-    href: "https://web-tracking.vercel.app",
+    href: "https://web-tracking-sigma.vercel.app",
     description: "Track parcels live with just a parcel number.",
     icon: MapPin,
   },
@@ -33,13 +33,13 @@ const APP_LINKS = [
   },
   {
     title: "Hub Console",
-    href: "https://web-hub.vercel.app",
+    href: "https://ccc-hub-seven.vercel.app",
     description: "Scan IN/OUT and manage branch inventory.",
     icon: Building2,
   },
   {
     title: "Admin Platform",
-    href: "https://web-admin.vercel.app",
+    href: "https://web-admin-rho-sepia.vercel.app",
     description: "Control routes, disputes, finance, and users.",
     icon: ShieldCheck,
   },
@@ -82,7 +82,7 @@ export default function Home() {
                   Book a Parcel <ArrowRight size={18} />
                 </a>
                 <a
-                  href="https://web-tracking.vercel.app"
+                  href="https://web-tracking-sigma.vercel.app"
                   className="inline-flex items-center gap-2 rounded-xl border border-black/15 bg-white px-5 py-3 transition-all duration-200 hover:-translate-y-0.5 hover:bg-black/5"
                 >
                   Track Parcel <MapPin size={18} />
@@ -184,9 +184,9 @@ export default function Home() {
             <h4 className="font-medium">Platform</h4>
             <ul className="mt-3 space-y-2 text-sm text-white/70">
               <li><a href="https://web-sender.vercel.app">Sender Portal</a></li>
-              <li><a href="https://web-tracking.vercel.app">Tracking</a></li>
-              <li><a href="https://web-hub.vercel.app">Hub Console</a></li>
-              <li><a href="https://web-admin.vercel.app">Admin Console</a></li>
+              <li><a href="https://web-tracking-sigma.vercel.app">Tracking</a></li>
+              <li><a href="https://ccc-hub-seven.vercel.app">Hub Console</a></li>
+              <li><a href="https://web-admin-rho-sepia.vercel.app">Admin Console</a></li>
             </ul>
           </div>
           <div>
