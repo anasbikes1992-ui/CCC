@@ -1,0 +1,14 @@
+{
+  "name": "ccc-root",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Root package for Vercel framework detection and delegated landing build",
+  "scripts": {
+    "build": "cd web-landing && npm run build",
+    "dev": "cd web-landing && npm run dev",
+    "start": "cd web-landing && npm run start"
+  },
+  "dependencies": {
+    "next": "16.2.6"
+  }
+}
