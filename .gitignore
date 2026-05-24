@@ -68,6 +68,30 @@ web-tracking/.turbo/
 web-tracking/next-env.d.ts
 web-tracking/.vercel
 
+web-admin/node_modules/
+web-admin/.next/
+web-admin/out/
+web-admin/build/
+web-admin/coverage/
+web-admin/.turbo/
+web-admin/.vercel/
+
+web-hub/node_modules/
+web-hub/.next/
+web-hub/out/
+web-hub/build/
+web-hub/coverage/
+web-hub/.turbo/
+web-hub/.vercel/
+
+web-landing/node_modules/
+web-landing/.next/
+web-landing/out/
+web-landing/build/
+web-landing/coverage/
+web-landing/.turbo/
+web-landing/.vercel/
+
 # =============================================================================
 # Mobile (Flutter — driver)
 # =============================================================================
@@ -90,6 +114,46 @@ mobile-driver/ios/Flutter/Flutter.podspec
 mobile-driver/ios/Flutter/flutter_export_environment.sh
 mobile-driver/ios/Flutter/Generated.xcconfig
 mobile-driver/lib/config.dart
+
+mobile_sender/.dart_tool/
+mobile_sender/.flutter-plugins
+mobile_sender/.flutter-plugins-dependencies
+mobile_sender/.packages
+mobile_sender/.pub-cache/
+mobile_sender/.pub/
+mobile_sender/build/
+mobile_sender/android/.gradle/
+mobile_sender/android/.kotlin/
+mobile_sender/android/captures/
+mobile_sender/android/local.properties
+mobile_sender/android/key.properties
+mobile_sender/ios/Pods/
+mobile_sender/ios/.symlinks/
+mobile_sender/ios/Flutter/Flutter.framework
+mobile_sender/ios/Flutter/Flutter.podspec
+mobile_sender/ios/Flutter/flutter_export_environment.sh
+mobile_sender/ios/Flutter/Generated.xcconfig
+mobile_sender/lib/config.dart
+
+mobile_driver/.dart_tool/
+mobile_driver/.flutter-plugins
+mobile_driver/.flutter-plugins-dependencies
+mobile_driver/.packages
+mobile_driver/.pub-cache/
+mobile_driver/.pub/
+mobile_driver/build/
+mobile_driver/android/.gradle/
+mobile_driver/android/.kotlin/
+mobile_driver/android/captures/
+mobile_driver/android/local.properties
+mobile_driver/android/key.properties
+mobile_driver/ios/Pods/
+mobile_driver/ios/.symlinks/
+mobile_driver/ios/Flutter/Flutter.framework
+mobile_driver/ios/Flutter/Flutter.podspec
+mobile_driver/ios/Flutter/flutter_export_environment.sh
+mobile_driver/ios/Flutter/Generated.xcconfig
+mobile_driver/lib/config.dart
 
 # =============================================================================
 # Docker / local infra
