@@ -57,10 +57,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       appBar: AppBar(
         title: const Text('CCC Sender'),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.refresh),
-            onPressed: _loadStats,
-          ),
+          IconButton(icon: const Icon(Icons.refresh), onPressed: _loadStats),
         ],
       ),
       body: _isLoading
@@ -76,14 +73,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
             icon: Icon(Icons.dashboard),
             label: 'Dashboard',
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.list),
-            label: 'My Parcels',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Profile',
-          ),
+          BottomNavigationBarItem(icon: Icon(Icons.list), label: 'My Parcels'),
+          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
         ],
       ),
       floatingActionButton: _selectedIndex == 0
@@ -91,7 +82,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const BookParcelScreen()),
+                  MaterialPageRoute(
+                    builder: (context) => const BookParcelScreen(),
+                  ),
                 );
               },
               icon: const Icon(Icons.add),
@@ -119,12 +112,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
           children: [
             Text(
               'Quick Stats',
-              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+              style: Theme.of(
+                context,
+              ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
-            
+
             // Stats Cards
             Row(
               children: [
@@ -170,16 +163,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
               ],
             ),
             const SizedBox(height: 32),
-            
+
             // Quick Actions
             Text(
               'Quick Actions',
-              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+              style: Theme.of(
+                context,
+              ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
-            
+
             _buildQuickAction(
               'Book New Parcel',
               'Send a parcel to any destination',
@@ -188,7 +181,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
               () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const BookParcelScreen()),
+                  MaterialPageRoute(
+                    builder: (context) => const BookParcelScreen(),
+                  ),
                 );
               },
             ),
@@ -219,17 +214,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
             const SizedBox(height: 8),
             Text(
               value.toString(),
-              style: const TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-              ),
+              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             Text(
               label,
-              style: TextStyle(
-                fontSize: 12,
-                color: Colors.grey[600],
-              ),
+              style: TextStyle(fontSize: 12, color: Colors.grey[600]),
             ),
           ],
         ),
@@ -251,10 +240,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           backgroundColor: color.withOpacity(0.1),
           child: Icon(icon, color: color),
         ),
-        title: Text(
-          title,
-          style: const TextStyle(fontWeight: FontWeight.bold),
-        ),
+        title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
         subtitle: Text(subtitle),
         trailing: const Icon(Icons.arrow_forward_ios, size: 16),
         onTap: onTap,

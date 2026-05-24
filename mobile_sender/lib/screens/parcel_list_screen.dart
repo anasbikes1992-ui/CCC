@@ -24,7 +24,9 @@ class _ParcelListScreenState extends State<ParcelListScreen> {
     setState(() => _isLoading = true);
 
     try {
-      final response = await ApiService.get('/customer/parcels?filter=$_filter');
+      final response = await ApiService.get(
+        '/customer/parcels?filter=$_filter',
+      );
       if (!mounted) return;
 
       if (response['success'] == true) {
@@ -90,91 +92,101 @@ class _ParcelListScreenState extends State<ParcelListScreen> {
             child: _isLoading
                 ? const Center(child: CircularProgressIndicator())
                 : _parcels.isEmpty
-                    ? Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.inbox,
-                              size: 80,
-                              color: Colors.grey[400],
-                            ),
-                            const SizedBox(height: 16),
-                            Text(
-                              'No parcels found',
-                              style: TextStyle(
-                                fontSize: 18,
-                                color: Colors.grey[600],
+                ? Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.inbox, size: 80, color: Colors.grey[400]),
+                        const SizedBox(height: 16),
+                        Text(
+                          'No parcels found',
+                          style: TextStyle(
+                            fontSize: 18,
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                      ],
+                    ),
+                  )
+                : RefreshIndicator(
+                    onRefresh: _loadParcels,
+                    child: ListView.builder(
+                      padding: const EdgeInsets.all(8.0),
+                      itemCount: _parcels.length,
+                      itemBuilder: (context, index) {
+                        final parcel = _parcels[index];
+                        return Card(
+                          margin: const EdgeInsets.only(bottom: 8.0),
+                          child: ListTile(
+                            leading: CircleAvatar(
+                              backgroundColor: _getStatusColor(
+                                parcel['status'],
+                              ).withOpacity(0.2),
+                              child: Icon(
+                                Icons.local_shipping,
+                                color: _getStatusColor(parcel['status']),
                               ),
                             ),
-                          ],
-                        ),
-                      )
-                    : RefreshIndicator(
-                        onRefresh: _loadParcels,
-                        child: ListView.builder(
-                          padding: const EdgeInsets.all(8.0),
-                          itemCount: _parcels.length,
-                          itemBuilder: (context, index) {
-                            final parcel = _parcels[index];
-                            return Card(
-                              margin: const EdgeInsets.only(bottom: 8.0),
-                              child: ListTile(
-                                leading: CircleAvatar(
-                                  backgroundColor: _getStatusColor(parcel['status']).withOpacity(0.2),
-                                  child: Icon(
-                                    Icons.local_shipping,
-                                    color: _getStatusColor(parcel['status']),
-                                  ),
+                            title: Text(
+                              parcel['parcel_number'] ?? 'N/A',
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            subtitle: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'To: ${parcel['receiver_name'] ?? 'Receiver'}',
                                 ),
-                                title: Text(
-                                  parcel['parcel_number'] ?? 'N/A',
-                                  style: const TextStyle(fontWeight: FontWeight.bold),
-                                ),
-                                subtitle: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                const SizedBox(height: 4),
+                                Row(
                                   children: [
-                                    Text('To: ${parcel['receiver_name'] ?? 'Receiver'}'),
-                                    const SizedBox(height: 4),
-                                    Row(
-                                      children: [
-                                        Container(
-                                          padding: const EdgeInsets.symmetric(
-                                            horizontal: 8,
-                                            vertical: 2,
-                                          ),
-                                          decoration: BoxDecoration(
-                                            color: _getStatusColor(parcel['status']),
-                                            borderRadius: BorderRadius.circular(12),
-                                          ),
-                                          child: Text(
-                                            parcel['status'].toString().replaceAll('_', ' ').toUpperCase(),
-                                            style: const TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 10,
-                                            ),
-                                          ),
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 8,
+                                        vertical: 2,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: _getStatusColor(
+                                          parcel['status'],
                                         ),
-                                      ],
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                      child: Text(
+                                        parcel['status']
+                                            .toString()
+                                            .replaceAll('_', ' ')
+                                            .toUpperCase(),
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 10,
+                                        ),
+                                      ),
                                     ),
                                   ],
                                 ),
-                                trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => ParcelDetailScreen(
-                                        parcelId: parcel['id'],
-                                      ),
-                                    ),
-                                  );
-                                },
-                              ),
-                            );
-                          },
-                        ),
-                      ),
+                              ],
+                            ),
+                            trailing: const Icon(
+                              Icons.arrow_forward_ios,
+                              size: 16,
+                            ),
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => ParcelDetailScreen(
+                                    parcelId: parcel['id'],
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        );
+                      },
+                    ),
+                  ),
           ),
         ],
       ),

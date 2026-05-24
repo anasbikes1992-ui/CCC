@@ -16,7 +16,7 @@ class _BookParcelScreenState extends State<BookParcelScreen> {
   final _pickupAddressController = TextEditingController();
   final _dropAddressController = TextEditingController();
   final _declaredValueController = TextEditingController();
-  
+
   String? _selectedRoute;
   String? _selectedSize;
   List<Map<String, dynamic>> _routes = [];
@@ -50,10 +50,14 @@ class _BookParcelScreenState extends State<BookParcelScreen> {
       if (mounted) {
         setState(() {
           _routes = List<Map<String, dynamic>>.from(
-            routesResponse['success'] == true ? (routesResponse['data'] ?? []) : [],
+            routesResponse['success'] == true
+                ? (routesResponse['data'] ?? [])
+                : [],
           );
           _sizes = List<Map<String, dynamic>>.from(
-            sizesResponse['success'] == true ? (sizesResponse['data'] ?? []) : [],
+            sizesResponse['success'] == true
+                ? (sizesResponse['data'] ?? [])
+                : [],
           );
           _loadingData = false;
         });
@@ -76,7 +80,8 @@ class _BookParcelScreenState extends State<BookParcelScreen> {
         'drop_type': 'doorstep',
         'is_express': false,
         'has_insurance': false,
-        'declared_value_lkr': double.tryParse(_declaredValueController.text) ?? 0,
+        'declared_value_lkr':
+            double.tryParse(_declaredValueController.text) ?? 0,
         'cod_amount_lkr': 0,
       });
 
@@ -154,12 +159,12 @@ class _BookParcelScreenState extends State<BookParcelScreen> {
             children: [
               Text(
                 'Receiver Information',
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+                style: Theme.of(
+                  context,
+                ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 16),
-              
+
               TextFormField(
                 controller: _receiverNameController,
                 decoration: const InputDecoration(
@@ -169,7 +174,7 @@ class _BookParcelScreenState extends State<BookParcelScreen> {
                 validator: (v) => v?.isEmpty == true ? 'Required' : null,
               ),
               const SizedBox(height: 12),
-              
+
               TextFormField(
                 controller: _receiverPhoneController,
                 keyboardType: TextInputType.phone,
@@ -185,15 +190,15 @@ class _BookParcelScreenState extends State<BookParcelScreen> {
                 },
               ),
               const SizedBox(height: 24),
-              
+
               Text(
                 'Parcel Details',
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+                style: Theme.of(
+                  context,
+                ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 16),
-              
+
               DropdownButtonFormField<String>(
                 value: _selectedRoute,
                 decoration: const InputDecoration(
@@ -203,7 +208,9 @@ class _BookParcelScreenState extends State<BookParcelScreen> {
                 items: _routes.map<DropdownMenuItem<String>>((route) {
                   return DropdownMenuItem<String>(
                     value: route['code'].toString(),
-                    child: Text('${route['code']} - ${route['display_name'] ?? route['name']}'),
+                    child: Text(
+                      '${route['code']} - ${route['display_name'] ?? route['name']}',
+                    ),
                   );
                 }).toList(),
                 onChanged: (value) {
@@ -213,7 +220,7 @@ class _BookParcelScreenState extends State<BookParcelScreen> {
                 validator: (v) => v == null ? 'Please select route' : null,
               ),
               const SizedBox(height: 12),
-              
+
               DropdownButtonFormField<String>(
                 value: _selectedSize,
                 decoration: const InputDecoration(
@@ -223,7 +230,9 @@ class _BookParcelScreenState extends State<BookParcelScreen> {
                 items: _sizes.map<DropdownMenuItem<String>>((size) {
                   return DropdownMenuItem<String>(
                     value: size['code'].toString(),
-                    child: Text('${size['code']} - ${size['display_name'] ?? size['name']} (${size['max_weight_kg']}kg)'),
+                    child: Text(
+                      '${size['code']} - ${size['display_name'] ?? size['name']} (${size['max_weight_kg']}kg)',
+                    ),
                   );
                 }).toList(),
                 onChanged: (value) {
@@ -233,10 +242,12 @@ class _BookParcelScreenState extends State<BookParcelScreen> {
                 validator: (v) => v == null ? 'Please select size' : null,
               ),
               const SizedBox(height: 12),
-              
+
               TextFormField(
                 controller: _weightController,
-                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: true,
+                ),
                 decoration: const InputDecoration(
                   labelText: 'Weight (kg)',
                   border: OutlineInputBorder(),
@@ -244,7 +255,8 @@ class _BookParcelScreenState extends State<BookParcelScreen> {
                 validator: (v) {
                   if (v == null || v.trim().isEmpty) return 'Required';
                   final weight = double.tryParse(v.trim());
-                  if (weight == null || weight <= 0) return 'Enter valid weight';
+                  if (weight == null || weight <= 0)
+                    return 'Enter valid weight';
                   return null;
                 },
                 onChanged: (_) => _calculatePrice(),
@@ -261,7 +273,7 @@ class _BookParcelScreenState extends State<BookParcelScreen> {
                 validator: (v) => v?.isEmpty == true ? 'Required' : null,
               ),
               const SizedBox(height: 12),
-              
+
               TextFormField(
                 controller: _dropAddressController,
                 maxLines: 2,
@@ -272,7 +284,7 @@ class _BookParcelScreenState extends State<BookParcelScreen> {
                 validator: (v) => v?.isEmpty == true ? 'Required' : null,
               ),
               const SizedBox(height: 12),
-              
+
               TextFormField(
                 controller: _declaredValueController,
                 keyboardType: TextInputType.number,
@@ -283,7 +295,7 @@ class _BookParcelScreenState extends State<BookParcelScreen> {
                 onChanged: (_) => _calculatePrice(),
               ),
               const SizedBox(height: 24),
-              
+
               if (_estimatedPrice != null)
                 Card(
                   color: Colors.blue.shade50,
@@ -294,7 +306,10 @@ class _BookParcelScreenState extends State<BookParcelScreen> {
                       children: [
                         const Text(
                           'Estimated Price:',
-                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                         Text(
                           'LKR ${_estimatedPrice!.toStringAsFixed(2)}',
@@ -309,7 +324,7 @@ class _BookParcelScreenState extends State<BookParcelScreen> {
                   ),
                 ),
               const SizedBox(height: 16),
-              
+
               ElevatedButton(
                 onPressed: _isLoading ? null : _submitBooking,
                 style: ElevatedButton.styleFrom(

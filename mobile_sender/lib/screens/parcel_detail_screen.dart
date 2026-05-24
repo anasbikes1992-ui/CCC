@@ -26,13 +26,17 @@ class _ParcelDetailScreenState extends State<ParcelDetailScreen> {
     setState(() => _isLoading = true);
 
     try {
-      final response = await ApiService.get('/customer/parcels/${widget.parcelId}');
+      final response = await ApiService.get(
+        '/customer/parcels/${widget.parcelId}',
+      );
       if (!mounted) return;
 
       if (response['success'] == true) {
         setState(() {
           _parcel = response['data']['parcel'];
-          _events = List<Map<String, dynamic>>.from(response['data']['events'] ?? []);
+          _events = List<Map<String, dynamic>>.from(
+            response['data']['events'] ?? [],
+          );
         });
       } else {
         setState(() {
@@ -125,7 +129,7 @@ class _ParcelDetailScreenState extends State<ParcelDetailScreen> {
                 ),
               ),
               const SizedBox(height: 24),
-              
+
               // Parcel Number
               Center(
                 child: Text(
@@ -137,17 +141,23 @@ class _ParcelDetailScreenState extends State<ParcelDetailScreen> {
                 ),
               ),
               const SizedBox(height: 8),
-              
+
               // Status Badge
               Center(
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
                   decoration: BoxDecoration(
                     color: _getStatusColor(_parcel!['status']),
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
-                    _parcel!['status'].toString().replaceAll('_', ' ').toUpperCase(),
+                    _parcel!['status']
+                        .toString()
+                        .replaceAll('_', ' ')
+                        .toUpperCase(),
                     style: const TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
@@ -156,7 +166,7 @@ class _ParcelDetailScreenState extends State<ParcelDetailScreen> {
                 ),
               ),
               const SizedBox(height: 24),
-              
+
               // Details Card
               Card(
                 child: Padding(
@@ -166,9 +176,19 @@ class _ParcelDetailScreenState extends State<ParcelDetailScreen> {
                     children: [
                       _buildDetailRow('Receiver', _parcel!['receiver_name']),
                       _buildDetailRow('Phone', _parcel!['receiver_phone']),
-                      _buildDetailRow('Route', _parcel!['route']?['code'] ?? _parcel!['route_code']),
-                      _buildDetailRow('Size', _parcel!['package_size']?['code'] ?? _parcel!['package_size_code']),
-                      _buildDetailRow('Price', 'LKR ${_parcel!['price']?['total_lkr'] ?? _parcel!['total_price_lkr'] ?? '0'}'),
+                      _buildDetailRow(
+                        'Route',
+                        _parcel!['route']?['code'] ?? _parcel!['route_code'],
+                      ),
+                      _buildDetailRow(
+                        'Size',
+                        _parcel!['package_size']?['code'] ??
+                            _parcel!['package_size_code'],
+                      ),
+                      _buildDetailRow(
+                        'Price',
+                        'LKR ${_parcel!['price']?['total_lkr'] ?? _parcel!['total_price_lkr'] ?? '0'}',
+                      ),
                       _buildDetailRow('Pickup', _parcel!['pickup_address']),
                       _buildDetailRow('Drop', _parcel!['drop_address']),
                     ],
@@ -176,16 +196,16 @@ class _ParcelDetailScreenState extends State<ParcelDetailScreen> {
                 ),
               ),
               const SizedBox(height: 24),
-              
+
               // Tracking Timeline
               Text(
                 'Tracking History',
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+                style: Theme.of(
+                  context,
+                ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 16),
-              
+
               ..._events.map((event) => _buildTimelineItem(event)).toList(),
             ],
           ),
@@ -235,11 +255,7 @@ class _ParcelDetailScreenState extends State<ParcelDetailScreen> {
                 shape: BoxShape.circle,
               ),
             ),
-            Container(
-              width: 2,
-              height: 40,
-              color: Colors.grey[300],
-            ),
+            Container(width: 2, height: 40, color: Colors.grey[300]),
           ],
         ),
         const SizedBox(width: 12),
@@ -248,7 +264,10 @@ class _ParcelDetailScreenState extends State<ParcelDetailScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                event['event_type'].toString().replaceAll('_', ' ').toUpperCase(),
+                event['event_type']
+                    .toString()
+                    .replaceAll('_', ' ')
+                    .toUpperCase(),
                 style: const TextStyle(fontWeight: FontWeight.bold),
               ),
               Text(
