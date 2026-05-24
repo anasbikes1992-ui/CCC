@@ -6,6 +6,15 @@ import Link from "next/link";
 import { fetchApi } from "../../lib/api";
 import { ArrowLeft, CheckCircle2, ChevronRight, MapPin, Package, CreditCard, Truck } from "lucide-react";
 
+const ROUTE_HUBS: Record<string, { pickupHubCode: string; pickupHubName: string; dropHubCode: string; dropHubName: string }> = {
+  "CMB-KDY": {
+    pickupHubCode: "CMB",
+    pickupHubName: "Colombo Hub",
+    dropHubCode: "KDY",
+    dropHubName: "Kandy Hub",
+  },
+};
+
 export default function BookParcelPage() {
   const router = useRouter();
   const [step, setStep] = useState(1);
@@ -30,6 +39,8 @@ export default function BookParcelPage() {
     setFormData((prev) => ({ ...prev, [key]: value }));
   };
 
+  const routeHubs = ROUTE_HUBS[formData.route_code] ?? ROUTE_HUBS["CMB-KDY"];
+
   const nextStep = () => setStep((s) => Math.min(s + 1, 4));
   const prevStep = () => setStep((s) => Math.max(s - 1, 1));
 
@@ -40,6 +51,11 @@ export default function BookParcelPage() {
     const payload = {
       ...formData,
       weight_kg: parseFloat(formData.weight_kg),
+      pickup_type: "hub",
+      pickup_hub_code: routeHubs.pickupHubCode,
+      drop_type: "hub",
+      drop_hub_code: routeHubs.dropHubCode,
+      payment_method: "bank_transfer",
     };
 
     const res = await fetchApi<any>("/customer/parcels", {
@@ -64,6 +80,7 @@ export default function BookParcelPage() {
         </div>
         <h1 className="text-3xl font-bold">Booking Confirmed!</h1>
         <p className="mt-2 text-muted">Your parcel has been successfully booked.</p>
+        <p className="mt-2 text-sm text-muted">The sender fee is collected now. The receiver freight charge can be finalized at dispatch or collection.</p>
         
         <div className="mt-8 w-full max-w-sm overflow-hidden rounded-2xl border border-line bg-surface shadow-sm">
           <div className="bg-accent/10 py-6">
@@ -160,7 +177,7 @@ export default function BookParcelPage() {
                   </select>
                 </label>
                 <div className="rounded-xl bg-blue-50 p-4 text-sm text-blue-800">
-                  <p>Currently, only the Colombo ↔ Kandy pilot route is active.</p>
+                  <p>Currently, only Colombo-origin hub-to-hub pilot routes are enabled.</p>
                 </div>
               </div>
             </div>
@@ -208,63 +225,19 @@ export default function BookParcelPage() {
             <div className="animate-fade-up space-y-6">
               <h2 className="flex items-center gap-2 text-xl font-bold">
                 <MapPin className="h-6 w-6 text-accent" />
-                Pickup & Dropoff
+                Hub Transfer
               </h2>
               <div className="grid gap-6 md:grid-cols-2">
-                <div className="space-y-4 rounded-2xl border border-line p-5">
-                  <h3 className="font-semibold text-accent">Origin</h3>
-                  <label className="block">
-                    <span className="mb-1 block text-sm font-medium">Pickup Type</span>
-                    <select
-                      value={formData.pickup_type}
-                      onChange={(e) => updateForm("pickup_type", e.target.value)}
-                      className="w-full rounded-xl border border-line bg-white px-3 py-2 outline-none ring-accent/20 focus:ring-2"
-                    >
-                      <option value="hub">Drop at Hub</option>
-                      <option value="doorstep">Doorstep Pickup</option>
-                    </select>
-                  </label>
-                  {formData.pickup_type === "doorstep" && (
-                    <label className="block">
-                      <span className="mb-1 block text-sm font-medium">Pickup Address</span>
-                      <textarea
-                        required
-                        rows={2}
-                        value={formData.pickup_address}
-                        onChange={(e) => updateForm("pickup_address", e.target.value)}
-                        autoComplete="street-address"
-                        className="w-full rounded-xl border border-line bg-white px-3 py-2 outline-none ring-accent/20 focus:ring-2"
-                      />
-                    </label>
-                  )}
+                <div className="space-y-3 rounded-2xl border border-line p-5">
+                  <h3 className="font-semibold text-accent">Origin Hub</h3>
+                  <p className="text-sm text-foreground">{routeHubs.pickupHubName}</p>
+                  <p className="text-sm text-muted">Sender drops the parcel at the origin hub.</p>
                 </div>
 
-                <div className="space-y-4 rounded-2xl border border-line p-5">
-                  <h3 className="font-semibold text-accent">Destination</h3>
-                  <label className="block">
-                    <span className="mb-1 block text-sm font-medium">Dropoff Type</span>
-                    <select
-                      value={formData.drop_type}
-                      onChange={(e) => updateForm("drop_type", e.target.value)}
-                      className="w-full rounded-xl border border-line bg-white px-3 py-2 outline-none ring-accent/20 focus:ring-2"
-                    >
-                      <option value="hub">Hold at Hub</option>
-                      <option value="doorstep">Doorstep Delivery</option>
-                    </select>
-                  </label>
-                  {formData.drop_type === "doorstep" && (
-                    <label className="block">
-                      <span className="mb-1 block text-sm font-medium">Delivery Address</span>
-                      <textarea
-                        required
-                        rows={2}
-                        value={formData.drop_address}
-                        onChange={(e) => updateForm("drop_address", e.target.value)}
-                        autoComplete="street-address"
-                        className="w-full rounded-xl border border-line bg-white px-3 py-2 outline-none ring-accent/20 focus:ring-2"
-                      />
-                    </label>
-                  )}
+                <div className="space-y-3 rounded-2xl border border-line p-5">
+                  <h3 className="font-semibold text-accent">Destination Hub</h3>
+                  <p className="text-sm text-foreground">{routeHubs.dropHubName}</p>
+                  <p className="text-sm text-muted">Receiver freight charge is collected when receiving the parcel.</p>
                 </div>
               </div>
 
@@ -312,43 +285,18 @@ export default function BookParcelPage() {
                   <dd className="font-medium text-right">{formData.route_code}</dd>
                   <dt className="text-muted">Size</dt>
                   <dd className="font-medium text-right">{formData.package_size_code} ({formData.weight_kg}kg)</dd>
-                  <dt className="text-muted">Pickup</dt>
-                  <dd className="font-medium text-right capitalize">{formData.pickup_type}</dd>
-                  <dt className="text-muted">Delivery</dt>
-                  <dd className="font-medium text-right capitalize">{formData.drop_type}</dd>
+                  <dt className="text-muted">Origin Hub</dt>
+                  <dd className="font-medium text-right">{routeHubs.pickupHubName}</dd>
+                  <dt className="text-muted">Destination Hub</dt>
+                  <dd className="font-medium text-right">{routeHubs.dropHubName}</dd>
                   <dt className="text-muted">Receiver</dt>
                   <dd className="font-medium text-right">{formData.receiver_name}</dd>
                 </dl>
               </div>
 
-              <div className="space-y-4">
-                <label className="block">
-                  <span className="mb-2 block text-sm font-medium">Payment Method</span>
-                  <div className="grid grid-cols-2 gap-4">
-                    <button
-                      type="button"
-                      onClick={() => updateForm("payment_method", "cod")}
-                      className={`rounded-xl border-2 p-4 text-center transition ${
-                        formData.payment_method === "cod"
-                          ? "border-accent bg-accent/5 text-accent font-bold"
-                          : "border-line bg-white text-muted hover:border-accent/50"
-                      }`}
-                    >
-                      Cash on Delivery
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => updateForm("payment_method", "bank_transfer")}
-                      className={`rounded-xl border-2 p-4 text-center transition ${
-                        formData.payment_method === "bank_transfer"
-                          ? "border-accent bg-accent/5 text-accent font-bold"
-                          : "border-line bg-white text-muted hover:border-accent/50"
-                      }`}
-                    >
-                      Bank Transfer
-                    </button>
-                  </div>
-                </label>
+              <div className="rounded-2xl bg-blue-50 p-5 text-sm text-blue-900">
+                <p className="font-semibold">Pilot payment flow</p>
+                <p className="mt-2">The sender pays only the fixed booking fee now. The route matrix charge is finalized by operations and collected from the receiver at dispatch, delivery, or hub collection.</p>
               </div>
             </div>
           )}

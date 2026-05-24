@@ -15,6 +15,16 @@ class ParcelResource extends JsonResource
 {
     public function toArray(Request $request): array
     {
+        $pricingNotes = [];
+        if (is_string($this->notes) && $this->notes !== '') {
+            $decoded = json_decode($this->notes, true);
+            if (is_array($decoded)) {
+                $pricingNotes = $decoded;
+            }
+        }
+
+        $receiverCharge = (float) ($pricingNotes['receiver_charge_lkr'] ?? ((float) $this->base_price_lkr + (float) $this->surcharges_lkr - (float) $this->discount_lkr));
+
         return [
             'id' => $this->id,
             'parcel_number' => $this->parcel_number,
@@ -31,6 +41,8 @@ class ParcelResource extends JsonResource
             'route' => $this->whenLoaded('route', fn () => [
                 'code' => $this->route->code,
                 'display_name' => $this->route->display_name,
+                'origin_hub' => $this->route->originHub?->name,
+                'destination_hub' => $this->route->destinationHub?->name,
             ]),
             'package_size' => $this->whenLoaded('packageSize', fn () => [
                 'code' => $this->packageSize->code,
@@ -46,11 +58,18 @@ class ParcelResource extends JsonResource
                 'base_lkr' => (float) $this->base_price_lkr,
                 'surcharges_lkr' => (float) $this->surcharges_lkr,
                 'discount_lkr' => (float) $this->discount_lkr,
+                'receiver_charge_lkr' => $receiverCharge,
+                'sender_fee_lkr' => (float) $this->total_price_lkr,
                 'total_lkr' => (float) $this->total_price_lkr,
             ],
             'capacity_units' => $this->capacity_units,
             'qr_token' => $this->qr_token,
             'tracking_url' => config('app.url').'/track/'.$this->parcel_number,
+            'ops_pricing' => [
+                'mode' => $pricingNotes['pricing_mode'] ?? 'hub_to_hub_colombo_pilot',
+                'charge_timing' => $pricingNotes['charge_timing'] ?? 'receiver_at_collection_or_delivery',
+                'assignment_status' => $pricingNotes['assignment_status'] ?? 'assigned',
+            ],
         ];
     }
 }

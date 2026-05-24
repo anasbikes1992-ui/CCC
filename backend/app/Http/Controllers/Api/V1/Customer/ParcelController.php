@@ -43,7 +43,8 @@ class ParcelController extends Controller
     {
         $routes = Route::query()
             ->where('is_active', true)
-            ->with(['originHub:id,name', 'destinationHub:id,name'])
+            ->whereHas('originHub', fn ($query) => $query->where('code', 'CMB'))
+            ->with(['originHub:id,code,name', 'destinationHub:id,code,name'])
             ->orderBy('display_name')
             ->get()
             ->map(fn (Route $route) => [
@@ -51,6 +52,8 @@ class ParcelController extends Controller
                 'code' => $route->code,
                 'display_name' => $route->display_name,
                 'name' => $route->display_name,
+                'origin_hub_code' => $route->originHub?->code,
+                'destination_hub_code' => $route->destinationHub?->code,
                 'origin_hub' => $route->originHub?->name,
                 'destination_hub' => $route->destinationHub?->name,
             ]);

@@ -7,6 +7,7 @@ namespace App\Services;
 use App\Enums\ParcelEventType;
 use App\Enums\PaymentMethod;
 use App\Enums\PaymentStatus;
+use App\Exceptions\TripFullException;
 use App\Models\Hub;
 use App\Models\PackageSize;
 use App\Models\Parcel;
@@ -39,54 +40,64 @@ class BookingService
     {
         $route = Route::where('code', $input['route_code'])->firstOrFail();
         $size = PackageSize::where('code', $input['package_size_code'])->firstOrFail();
+        $pickupType = 'hub';
+        $dropType = 'hub';
 
         $quote = $this->pricing->quote(
             routeCode: $input['route_code'],
             sizeCode: $input['package_size_code'],
-            pickupType: $input['pickup_type'],
-            dropType: $input['drop_type'],
+            pickupType: $pickupType,
+            dropType: $dropType,
             isExpress: (bool) ($input['is_express'] ?? false),
             hasInsurance: (bool) ($input['has_insurance'] ?? false),
             declaredValueLkr: $input['declared_value_lkr'] ?? null,
             codAmountLkr: $input['cod_amount_lkr'] ?? null,
         );
 
-        return DB::transaction(function () use ($customer, $route, $size, $quote, $input) {
-            $trip = $this->tripAssignment->nextAvailable(
-                routeCode: $input['route_code'],
-                capacityUnits: $size->capacity_units,
-            );
+        return DB::transaction(function () use ($customer, $route, $size, $quote, $input, $pickupType, $dropType) {
+            try {
+                $trip = $this->tripAssignment->nextAvailable(
+                    routeCode: $input['route_code'],
+                    capacityUnits: $size->capacity_units,
+                );
+            } catch (TripFullException) {
+                $trip = null;
+            }
 
             $parcelNumber = $this->numbers->generate();
             $parcelId = (string) \Illuminate\Support\Str::uuid();
 
-            $pickupHubId = null;
-            $dropHubId = null;
-            if ($input['pickup_type'] === 'hub' && ! empty($input['pickup_hub_code'])) {
-                $pickupHubId = Hub::where('code', $input['pickup_hub_code'])->value('id');
-            }
-            if ($input['drop_type'] === 'hub' && ! empty($input['drop_hub_code'])) {
-                $dropHubId = Hub::where('code', $input['drop_hub_code'])->value('id');
-            }
+            $pickupHubId = $route->origin_hub_id ?? Hub::where('code', 'CMB')->value('id');
+            $dropHubId = $route->destination_hub_id;
 
             $qrToken = $this->qr->sign($parcelId, $parcelNumber);
+            $pricingNotes = [
+                'pricing_mode' => 'hub_to_hub_colombo_pilot',
+                'sender_fee_lkr' => $quote['sender_fee_lkr'],
+                'receiver_charge_lkr' => $quote['receiver_charge_lkr'],
+                'charge_timing' => 'receiver_at_collection_or_delivery',
+                'matrix_adjustable_by' => ['admin', 'driver'],
+            ];
+            if ($trip === null) {
+                $pricingNotes['assignment_status'] = 'pending_dispatch_assignment';
+            }
 
             $parcel = new Parcel([
                 'parcel_number' => $parcelNumber,
                 'qr_token' => $qrToken,
                 'customer_id' => $customer->id,
-                'trip_id' => $trip->id,
+                'trip_id' => $trip?->id,
                 'route_id' => $route->id,
                 'package_size_id' => $size->id,
                 'weight_kg' => $input['weight_kg'],
                 'length_cm' => $input['length_cm'] ?? null,
                 'width_cm' => $input['width_cm'] ?? null,
                 'height_cm' => $input['height_cm'] ?? null,
-                'pickup_type' => $input['pickup_type'],
-                'pickup_address' => $input['pickup_address'] ?? null,
+                'pickup_type' => $pickupType,
+                'pickup_address' => null,
                 'pickup_hub_id' => $pickupHubId,
-                'drop_type' => $input['drop_type'],
-                'drop_address' => $input['drop_address'] ?? null,
+                'drop_type' => $dropType,
+                'drop_address' => null,
                 'drop_hub_id' => $dropHubId,
                 'receiver_name' => $input['receiver_name'],
                 'receiver_phone' => $input['receiver_phone'],
@@ -97,10 +108,11 @@ class BookingService
                 'base_price_lkr' => $quote['base_lkr'],
                 'surcharges_lkr' => $quote['surcharges_lkr'],
                 'discount_lkr' => $quote['discount_lkr'],
-                'total_price_lkr' => $quote['total_lkr'] + $quote['cod_fee_lkr'],
+                'total_price_lkr' => $quote['sender_fee_lkr'],
                 'capacity_units' => $size->capacity_units,
                 'status' => 'BOOKED',
                 'status_changed_at' => now(),
+                'notes' => json_encode($pricingNotes, JSON_UNESCAPED_SLASHES),
             ]);
             $parcel->id = $parcelId;
             $parcel->save();
@@ -121,6 +133,11 @@ class BookingService
                 'method' => PaymentMethod::from($input['payment_method']),
                 'status' => PaymentStatus::PENDING,
                 'amount_lkr' => $parcel->total_price_lkr,
+                'metadata' => [
+                    'sender_fee_lkr' => $quote['sender_fee_lkr'],
+                    'receiver_charge_lkr' => $quote['receiver_charge_lkr'],
+                    'charge_timing' => 'receiver_at_collection_or_delivery',
+                ],
             ]);
 
             // Initial BOOKED event — written directly because there is no prior status to transition from.
@@ -132,9 +149,9 @@ class BookingService
                 'to_status' => 'BOOKED',
                 'actor_user_id' => $customer->id,
                 'actor_role' => $customer->role,
-                'trip_id' => $trip->id,
+                'trip_id' => $trip?->id,
                 'scan_mode' => 'system',
-                'metadata' => ['initial' => true],
+                'metadata' => ['initial' => true, 'trip_assignment_pending' => $trip === null],
                 'occurred_at' => now(),
             ]);
 

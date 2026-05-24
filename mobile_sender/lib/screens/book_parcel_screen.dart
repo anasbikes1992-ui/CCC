@@ -25,6 +25,7 @@ class _BookParcelScreenState extends State<BookParcelScreen> {
   bool _loadingData = true;
   String? _loadError;
   double? _estimatedPrice;
+  double? _receiverChargeEstimate;
 
   @override
   void initState() {
@@ -100,6 +101,47 @@ class _BookParcelScreenState extends State<BookParcelScreen> {
     return [];
   }
 
+  Map<String, dynamic>? _selectedRouteData() {
+    for (final route in _routes) {
+      final routeCode = (route['code'] ?? route['id'] ?? '').toString();
+      if (routeCode == _selectedRoute) {
+        return route;
+      }
+    }
+    return null;
+  }
+
+  String _formatRouteHubSummary() {
+    final route = _selectedRouteData();
+    final origin = (route?['origin_hub'] ?? 'Colombo Hub').toString();
+    final destination = (route?['destination_hub'] ?? 'Destination Hub').toString();
+    return '$origin -> $destination';
+  }
+
+  String _bookingErrorMessage(Map<String, dynamic> response) {
+    final error = response['error'];
+    if (error is Map<String, dynamic>) {
+      final message = error['message']?.toString();
+      final details = error['details'];
+      if (details is Map) {
+        final values = details.values
+            .whereType<List>()
+            .expand((item) => item)
+            .map((item) => item.toString())
+            .where((item) => item.isNotEmpty)
+            .toList();
+        if (values.isNotEmpty) {
+          return values.first;
+        }
+      }
+      if (message != null && message.isNotEmpty) {
+        return message;
+      }
+    }
+
+    return 'Booking failed. Please try again.';
+  }
+
   Future<void> _calculatePrice() async {
     if (_selectedRoute == null || _selectedSize == null) return;
 
@@ -107,8 +149,8 @@ class _BookParcelScreenState extends State<BookParcelScreen> {
       final response = await ApiService.post('/customer/parcels/quote', {
         'route_code': _selectedRoute,
         'package_size_code': _selectedSize,
-        'pickup_type': 'doorstep',
-        'drop_type': 'doorstep',
+        'pickup_type': 'hub',
+        'drop_type': 'hub',
         'is_express': false,
         'has_insurance': false,
         'declared_value_lkr':
@@ -119,6 +161,7 @@ class _BookParcelScreenState extends State<BookParcelScreen> {
       if (response['success'] == true && mounted) {
         setState(() {
           _estimatedPrice = (response['data']['total_lkr'] as num?)?.toDouble();
+          _receiverChargeEstimate = (response['data']['receiver_charge_lkr'] as num?)?.toDouble();
         });
       }
     } catch (e) {
@@ -131,24 +174,36 @@ class _BookParcelScreenState extends State<BookParcelScreen> {
 
     setState(() => _isLoading = true);
 
-    final response = await ApiService.post('/customer/parcels', {
-      'receiver_name': _receiverNameController.text.trim(),
-      'receiver_phone': _receiverPhoneController.text.trim(),
-      'route_code': _selectedRoute,
-      'package_size_code': _selectedSize,
-      'weight_kg': double.tryParse(_weightController.text) ?? 1,
-      'pickup_type': 'doorstep',
-      'drop_type': 'doorstep',
-      'pickup_address': _pickupAddressController.text.trim(),
-      'drop_address': _dropAddressController.text.trim(),
-      'declared_value_lkr': double.tryParse(_declaredValueController.text) ?? 0,
-      'cod_amount_lkr': 0,
-      'is_express': false,
-      'has_insurance': false,
-      'payment_method': 'bank_transfer',
-    });
+    final selectedRoute = _selectedRouteData();
 
-    setState(() => _isLoading = false);
+    Map<String, dynamic> response;
+    try {
+      response = await ApiService.post('/customer/parcels', {
+        'receiver_name': _receiverNameController.text.trim(),
+        'receiver_phone': _receiverPhoneController.text.trim(),
+        'route_code': _selectedRoute,
+        'package_size_code': _selectedSize,
+        'weight_kg': double.tryParse(_weightController.text) ?? 1,
+        'pickup_type': 'hub',
+        'pickup_hub_code': selectedRoute?['origin_hub_code'] ?? 'CMB',
+        'drop_type': 'hub',
+        'drop_hub_code': selectedRoute?['destination_hub_code'] ?? 'KDY',
+        'declared_value_lkr': double.tryParse(_declaredValueController.text) ?? 0,
+        'cod_amount_lkr': 0,
+        'is_express': false,
+        'has_insurance': false,
+        'payment_method': 'bank_transfer',
+      });
+    } catch (e) {
+      response = {
+        'success': false,
+        'error': {'message': e.toString()},
+      };
+    }
+
+    if (mounted) {
+      setState(() => _isLoading = false);
+    }
 
     if (!mounted) return;
 
@@ -163,7 +218,7 @@ class _BookParcelScreenState extends State<BookParcelScreen> {
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(response['error']?['message'] ?? 'Booking failed'),
+          content: Text(_bookingErrorMessage(response)),
           backgroundColor: Colors.red,
         ),
       );
@@ -327,25 +382,26 @@ class _BookParcelScreenState extends State<BookParcelScreen> {
               ),
               const SizedBox(height: 12),
 
-              TextFormField(
-                controller: _pickupAddressController,
-                maxLines: 2,
-                decoration: const InputDecoration(
-                  labelText: 'Pickup Address',
-                  border: OutlineInputBorder(),
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.blue.shade50,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.blue.shade100),
                 ),
-                validator: (v) => v?.isEmpty == true ? 'Required' : null,
-              ),
-              const SizedBox(height: 12),
-
-              TextFormField(
-                controller: _dropAddressController,
-                maxLines: 2,
-                decoration: const InputDecoration(
-                  labelText: 'Drop Address',
-                  border: OutlineInputBorder(),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Pilot booking mode',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 6),
+                    Text('Route: ${_formatRouteHubSummary()}'),
+                    const SizedBox(height: 4),
+                    const Text('Sender drops at Colombo hub. Receiver pays freight charge when collecting or receiving the parcel.'),
+                  ],
                 ),
-                validator: (v) => v?.isEmpty == true ? 'Required' : null,
               ),
               const SizedBox(height: 12),
 
@@ -353,7 +409,7 @@ class _BookParcelScreenState extends State<BookParcelScreen> {
                 controller: _declaredValueController,
                 keyboardType: TextInputType.number,
                 decoration: const InputDecoration(
-                  labelText: 'Declared Value (LKR)',
+                  labelText: 'Declared Goods Value (LKR)',
                   border: OutlineInputBorder(),
                 ),
                 onChanged: (_) => _calculatePrice(),
@@ -365,24 +421,39 @@ class _BookParcelScreenState extends State<BookParcelScreen> {
                   color: Colors.blue.shade50,
                   child: Padding(
                     padding: const EdgeInsets.all(16.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        const Text(
-                          'Estimated Price:',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const Text(
+                              'Sender booking fee:',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            Text(
+                              'LKR ${_estimatedPrice!.toStringAsFixed(2)}',
+                              style: const TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.blue,
+                              ),
+                            ),
+                          ],
                         ),
-                        Text(
-                          'LKR ${_estimatedPrice!.toStringAsFixed(2)}',
-                          style: const TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.blue,
+                        if (_receiverChargeEstimate != null) ...[
+                          const SizedBox(height: 8),
+                          Text(
+                            'Receiver freight estimate: LKR ${_receiverChargeEstimate!.toStringAsFixed(2)}',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.blueGrey.shade700,
+                            ),
                           ),
-                        ),
+                        ],
                       ],
                     ),
                   ),

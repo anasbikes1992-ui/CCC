@@ -18,12 +18,17 @@ use Illuminate\Validation\ValidationException;
  */
 class PricingService
 {
+    private const SMALL_PARCEL_BOOKING_FEE_LKR = 50.0;
+    private const STANDARD_BOOKING_FEE_LKR = 100.0;
+
     /**
      * @return array{
      *   base_lkr: float,
      *   surcharges_lkr: float,
      *   cod_fee_lkr: float,
      *   discount_lkr: float,
+     *   receiver_charge_lkr: float,
+     *   sender_fee_lkr: float,
      *   total_lkr: float
      * }
      */
@@ -86,15 +91,27 @@ class PricingService
 
         $discount = 0.0; // v1.1
 
-        $total = $this->round2($base + $surcharges + $codFee - $discount);
+        $receiverCharge = $this->round2($base + $surcharges + $codFee - $discount);
+        $senderFee = $this->senderBookingFee($size);
 
         return [
             'base_lkr' => $this->round2($base),
             'surcharges_lkr' => $this->round2($surcharges),
             'cod_fee_lkr' => $this->round2($codFee),
             'discount_lkr' => $this->round2($discount),
-            'total_lkr' => $total,
+            'receiver_charge_lkr' => $receiverCharge,
+            'sender_fee_lkr' => $senderFee,
+            'total_lkr' => $senderFee,
         ];
+    }
+
+    private function senderBookingFee(PackageSize $size): float
+    {
+        return $this->round2(
+            $size->capacity_units <= 1
+                ? self::SMALL_PARCEL_BOOKING_FEE_LKR
+                : self::STANDARD_BOOKING_FEE_LKR
+        );
     }
 
     private function round2(float $v): float

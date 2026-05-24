@@ -4,6 +4,13 @@
 **Owners:** PricingService (Laravel)
 **Source of truth in DB:** `pricing_matrix` table (see `DB_SCHEMA.md` §7)
 
+> Operational pilot mode as of May 2026:
+> - Bookings are only for registered customers and registered shops.
+> - Customer booking flow is currently Colombo-origin hub-to-hub only.
+> - Sender pays only a fixed booking fee upfront: `LKR 50` for Small and `LKR 100` for all other size tiers.
+> - The route matrix remains the freight quote and can be adjusted operationally by admin/dispatch before final collection from the receiver.
+> - Receiver freight is collected at hub collection, dispatch settlement, or delivery completion.
+
 > Pricing is **not per-km**. It is `(route, package_size) → base price + surcharges`. This file is the canonical algorithm; the test suite for `PricingService` mirrors every rule below.
 
 ---
@@ -32,7 +39,9 @@ quote = {
   surcharges_lkr: number,    // sum of doorstep_pickup + doorstep_drop + express + insurance
   cod_fee_lkr: number,       // shown separately so customer sees the COD cost
   discount_lkr: number,      // 0 in MVP
-  total_lkr: number          // base + surcharges + cod_fee - discount
+  receiver_charge_lkr: number,
+  sender_fee_lkr: number,
+  total_lkr: number          // sender upfront fee shown in booking channels
 }
 ```
 
@@ -71,9 +80,18 @@ If no COD: `cod_fee_lkr = 0`.
 ### Step 7 — Discounts
 MVP: `discount_lkr = 0`. Loyalty / promo logic deferred to v1.1.
 
-### Step 8 — Total
+### Step 8 — Receiver charge
 ```
-total_lkr = base_lkr + surcharges_lkr + cod_fee_lkr - discount_lkr
+receiver_charge_lkr = base_lkr + surcharges_lkr + cod_fee_lkr - discount_lkr
+```
+
+### Step 9 — Sender upfront booking fee
+- Small (`S`) parcels: `50 LKR`
+- All other size tiers: `100 LKR`
+
+### Step 10 — Booking total shown in sender channels
+```
+total_lkr = sender_fee_lkr
 ```
 
 ## 4. Rule order matters
