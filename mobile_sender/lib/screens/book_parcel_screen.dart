@@ -12,6 +12,7 @@ class _BookParcelScreenState extends State<BookParcelScreen> {
   final _formKey = GlobalKey<FormState>();
   final _receiverNameController = TextEditingController();
   final _receiverPhoneController = TextEditingController();
+  final _weightController = TextEditingController(text: '1');
   final _pickupAddressController = TextEditingController();
   final _dropAddressController = TextEditingController();
   final _declaredValueController = TextEditingController();
@@ -34,6 +35,7 @@ class _BookParcelScreenState extends State<BookParcelScreen> {
   void dispose() {
     _receiverNameController.dispose();
     _receiverPhoneController.dispose();
+    _weightController.dispose();
     _pickupAddressController.dispose();
     _dropAddressController.dispose();
     _declaredValueController.dispose();
@@ -42,13 +44,17 @@ class _BookParcelScreenState extends State<BookParcelScreen> {
 
   Future<void> _loadData() async {
     try {
-      final routesResponse = await ApiService.get('/routes');
-      final sizesResponse = await ApiService.get('/package-sizes');
+      final routesResponse = await ApiService.get('/customer/routes');
+      final sizesResponse = await ApiService.get('/customer/package-sizes');
 
       if (mounted) {
         setState(() {
-          _routes = List<Map<String, dynamic>>.from(routesResponse['data'] ?? []);
-          _sizes = List<Map<String, dynamic>>.from(sizesResponse['data'] ?? []);
+          _routes = List<Map<String, dynamic>>.from(
+            routesResponse['success'] == true ? (routesResponse['data'] ?? []) : [],
+          );
+          _sizes = List<Map<String, dynamic>>.from(
+            sizesResponse['success'] == true ? (sizesResponse['data'] ?? []) : [],
+          );
           _loadingData = false;
         });
       }
@@ -63,15 +69,20 @@ class _BookParcelScreenState extends State<BookParcelScreen> {
     if (_selectedRoute == null || _selectedSize == null) return;
 
     try {
-      final response = await ApiService.post('/customer/parcels/calculate-price', {
-        'route_id': _selectedRoute,
-        'package_size_id': _selectedSize,
+      final response = await ApiService.post('/customer/parcels/quote', {
+        'route_code': _selectedRoute,
+        'package_size_code': _selectedSize,
+        'pickup_type': 'doorstep',
+        'drop_type': 'doorstep',
+        'is_express': false,
+        'has_insurance': false,
         'declared_value_lkr': double.tryParse(_declaredValueController.text) ?? 0,
+        'cod_amount_lkr': 0,
       });
 
       if (response['success'] == true && mounted) {
         setState(() {
-          _estimatedPrice = (response['data']['total_price_lkr'] as num?)?.toDouble();
+          _estimatedPrice = (response['data']['total_lkr'] as num?)?.toDouble();
         });
       }
     } catch (e) {
@@ -87,11 +98,18 @@ class _BookParcelScreenState extends State<BookParcelScreen> {
     final response = await ApiService.post('/customer/parcels', {
       'receiver_name': _receiverNameController.text.trim(),
       'receiver_phone': _receiverPhoneController.text.trim(),
-      'route_id': _selectedRoute,
-      'package_size_id': _selectedSize,
+      'route_code': _selectedRoute,
+      'package_size_code': _selectedSize,
+      'weight_kg': double.tryParse(_weightController.text) ?? 1,
+      'pickup_type': 'doorstep',
+      'drop_type': 'doorstep',
       'pickup_address': _pickupAddressController.text.trim(),
       'drop_address': _dropAddressController.text.trim(),
       'declared_value_lkr': double.tryParse(_declaredValueController.text) ?? 0,
+      'cod_amount_lkr': 0,
+      'is_express': false,
+      'has_insurance': false,
+      'payment_method': 'bank_transfer',
     });
 
     setState(() => _isLoading = false);
@@ -184,8 +202,8 @@ class _BookParcelScreenState extends State<BookParcelScreen> {
                 ),
                 items: _routes.map<DropdownMenuItem<String>>((route) {
                   return DropdownMenuItem<String>(
-                    value: route['id'].toString(),
-                    child: Text('${route['code']} - ${route['name']}'),
+                    value: route['code'].toString(),
+                    child: Text('${route['code']} - ${route['display_name'] ?? route['name']}'),
                   );
                 }).toList(),
                 onChanged: (value) {
@@ -204,8 +222,8 @@ class _BookParcelScreenState extends State<BookParcelScreen> {
                 ),
                 items: _sizes.map<DropdownMenuItem<String>>((size) {
                   return DropdownMenuItem<String>(
-                    value: size['id'].toString(),
-                    child: Text('${size['code']} - ${size['name']} (${size['max_weight_kg']}kg)'),
+                    value: size['code'].toString(),
+                    child: Text('${size['code']} - ${size['display_name'] ?? size['name']} (${size['max_weight_kg']}kg)'),
                   );
                 }).toList(),
                 onChanged: (value) {
@@ -216,6 +234,23 @@ class _BookParcelScreenState extends State<BookParcelScreen> {
               ),
               const SizedBox(height: 12),
               
+              TextFormField(
+                controller: _weightController,
+                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                decoration: const InputDecoration(
+                  labelText: 'Weight (kg)',
+                  border: OutlineInputBorder(),
+                ),
+                validator: (v) {
+                  if (v == null || v.trim().isEmpty) return 'Required';
+                  final weight = double.tryParse(v.trim());
+                  if (weight == null || weight <= 0) return 'Enter valid weight';
+                  return null;
+                },
+                onChanged: (_) => _calculatePrice(),
+              ),
+              const SizedBox(height: 12),
+
               TextFormField(
                 controller: _pickupAddressController,
                 maxLines: 2,

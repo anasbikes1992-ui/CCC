@@ -76,16 +76,22 @@ class ParcelController extends Controller
 
     public function update(Request $request, string $id, ScanService $scans): JsonResponse
     {
+        $validated = $request->validate([
+            'notes' => ['sometimes', 'nullable', 'string'],
+            'status' => ['sometimes', 'string', 'in:'.implode(',', ParcelStatus::values())],
+            'trip_id' => ['sometimes', 'nullable', 'uuid', 'exists:trips,id'],
+        ]);
+
         $parcel = Parcel::findOrFail($id);
 
         // Allow admin notes update
-        if ($request->filled('notes')) {
-            $parcel->update(['notes' => $request->input('notes')]);
+        if (array_key_exists('notes', $validated)) {
+            $parcel->update(['notes' => $validated['notes']]);
         }
 
         // Allow admin status override (admin bypass normal transition rules)
-        if ($request->filled('status')) {
-            $newStatus = ParcelStatus::from($request->input('status'));
+        if (array_key_exists('status', $validated)) {
+            $newStatus = ParcelStatus::from($validated['status']);
             $parcel->update([
                 'status'            => $newStatus,
                 'status_changed_at' => now(),
@@ -93,8 +99,8 @@ class ParcelController extends Controller
         }
 
         // Allow trip reassignment
-        if ($request->filled('trip_id')) {
-            $parcel->update(['trip_id' => $request->input('trip_id')]);
+        if (array_key_exists('trip_id', $validated)) {
+            $parcel->update(['trip_id' => $validated['trip_id']]);
         }
 
         $parcel->refresh()->load(['customer', 'route', 'trip', 'events']);

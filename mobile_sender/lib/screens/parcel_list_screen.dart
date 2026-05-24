@@ -22,16 +22,27 @@ class _ParcelListScreenState extends State<ParcelListScreen> {
 
   Future<void> _loadParcels() async {
     setState(() => _isLoading = true);
-    
+
     try {
       final response = await ApiService.get('/customer/parcels?filter=$_filter');
-      if (response['success'] == true && mounted) {
+      if (!mounted) return;
+
+      if (response['success'] == true) {
         setState(() {
           _parcels = List<Map<String, dynamic>>.from(response['data'] ?? []);
-          _isLoading = false;
+        });
+      } else {
+        setState(() {
+          _parcels = [];
         });
       }
     } catch (e) {
+      if (mounted) {
+        setState(() {
+          _parcels = [];
+        });
+      }
+    } finally {
       if (mounted) {
         setState(() => _isLoading = false);
       }
@@ -123,7 +134,7 @@ class _ParcelListScreenState extends State<ParcelListScreen> {
                                 subtitle: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text('To: ${parcel['receiver_name']}'),
+                                    Text('To: ${parcel['receiver_name'] ?? 'Receiver'}'),
                                     const SizedBox(height: 4),
                                     Row(
                                       children: [

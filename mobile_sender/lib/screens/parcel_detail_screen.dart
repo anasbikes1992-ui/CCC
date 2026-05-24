@@ -27,14 +27,27 @@ class _ParcelDetailScreenState extends State<ParcelDetailScreen> {
 
     try {
       final response = await ApiService.get('/customer/parcels/${widget.parcelId}');
-      if (response['success'] == true && mounted) {
+      if (!mounted) return;
+
+      if (response['success'] == true) {
         setState(() {
           _parcel = response['data']['parcel'];
           _events = List<Map<String, dynamic>>.from(response['data']['events'] ?? []);
-          _isLoading = false;
+        });
+      } else {
+        setState(() {
+          _parcel = null;
+          _events = [];
         });
       }
     } catch (e) {
+      if (mounted) {
+        setState(() {
+          _parcel = null;
+          _events = [];
+        });
+      }
+    } finally {
       if (mounted) {
         setState(() => _isLoading = false);
       }
@@ -153,9 +166,9 @@ class _ParcelDetailScreenState extends State<ParcelDetailScreen> {
                     children: [
                       _buildDetailRow('Receiver', _parcel!['receiver_name']),
                       _buildDetailRow('Phone', _parcel!['receiver_phone']),
-                      _buildDetailRow('Route', _parcel!['route_code']),
-                      _buildDetailRow('Size', _parcel!['package_size_code']),
-                      _buildDetailRow('Price', 'LKR ${_parcel!['total_price_lkr']}'),
+                      _buildDetailRow('Route', _parcel!['route']?['code'] ?? _parcel!['route_code']),
+                      _buildDetailRow('Size', _parcel!['package_size']?['code'] ?? _parcel!['package_size_code']),
+                      _buildDetailRow('Price', 'LKR ${_parcel!['price']?['total_lkr'] ?? _parcel!['total_price_lkr'] ?? '0'}'),
                       _buildDetailRow('Pickup', _parcel!['pickup_address']),
                       _buildDetailRow('Drop', _parcel!['drop_address']),
                     ],
@@ -239,7 +252,7 @@ class _ParcelDetailScreenState extends State<ParcelDetailScreen> {
                 style: const TextStyle(fontWeight: FontWeight.bold),
               ),
               Text(
-                event['created_at'] ?? '',
+                event['occurred_at'] ?? event['created_at'] ?? '',
                 style: TextStyle(fontSize: 12, color: Colors.grey[600]),
               ),
               if (event['notes'] != null)

@@ -11,6 +11,8 @@ use App\Models\Parcel;
 use App\Models\Trip;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Schema;
+use Throwable;
 
 class DashboardController extends Controller
 {
@@ -63,10 +65,18 @@ class DashboardController extends Controller
             ]);
 
         // Notification stats
-        $notifStats = NotificationLog::selectRaw('channel, status, COUNT(*) as count')
-            ->whereDate('created_at', '>=', now()->subDays(7))
-            ->groupBy('channel', 'status')
-            ->get();
+        $notifStats = collect();
+        try {
+            if (Schema::hasTable('notification_logs')) {
+                $notifStats = NotificationLog::selectRaw('channel, status, COUNT(*) as count')
+                    ->whereDate('created_at', '>=', now()->subDays(7))
+                    ->groupBy('channel', 'status')
+                    ->get();
+            }
+        } catch (Throwable) {
+            // Keep dashboard available even when optional notification aggregation fails.
+            $notifStats = collect();
+        }
 
         return ApiResponse::success([
             'kpis' => [

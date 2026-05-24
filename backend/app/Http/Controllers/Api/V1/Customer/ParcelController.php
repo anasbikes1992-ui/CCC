@@ -9,8 +9,11 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Customer\BookParcelRequest;
 use App\Http\Resources\ParcelResource;
 use App\Http\Responses\ApiResponse;
+use App\Models\PackageSize;
 use App\Models\Parcel;
+use App\Models\Route;
 use App\Services\BookingService;
+use App\Services\PricingService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 use Illuminate\Http\Request;
@@ -18,11 +21,93 @@ use Throwable;
 
 class ParcelController extends Controller
 {
+    public function stats(Request $request): JsonResponse
+    {
+        $base = Parcel::query()->where('customer_id', $request->user()->id);
+
+        $total = (clone $base)->count();
+        $inTransit = (clone $base)
+            ->whereIn('status', ['IN_TRANSIT', 'OUT_FOR_DELIVERY', 'LOADED_ON_LORRY', 'ARRIVED_AT_DESTINATION_HUB'])
+            ->count();
+        $delivered = (clone $base)->where('status', 'DELIVERED')->count();
+
+        return ApiResponse::success([
+            'total' => $total,
+            'in_transit' => $inTransit,
+            'delivered' => $delivered,
+            'pending' => max($total - $inTransit - $delivered, 0),
+        ]);
+    }
+
+    public function routes(): JsonResponse
+    {
+        $routes = Route::query()
+            ->where('is_active', true)
+            ->with(['originHub:id,name', 'destinationHub:id,name'])
+            ->orderBy('display_name')
+            ->get()
+            ->map(fn (Route $route) => [
+                'id' => $route->id,
+                'code' => $route->code,
+                'display_name' => $route->display_name,
+                'name' => $route->display_name,
+                'origin_hub' => $route->originHub?->name,
+                'destination_hub' => $route->destinationHub?->name,
+            ]);
+
+        return ApiResponse::success($routes);
+    }
+
+    public function packageSizes(): JsonResponse
+    {
+        $sizes = PackageSize::query()
+            ->where('is_active', true)
+            ->orderBy('sort_order')
+            ->get()
+            ->map(fn (PackageSize $size) => [
+                'id' => $size->id,
+                'code' => $size->code,
+                'display_name' => $size->display_name,
+                'name' => $size->display_name,
+                'max_weight_kg' => (float) $size->max_weight_kg,
+                'capacity_units' => $size->capacity_units,
+            ]);
+
+        return ApiResponse::success($sizes);
+    }
+
+    public function quote(Request $request, PricingService $pricing): JsonResponse
+    {
+        $validated = $request->validate([
+            'route_code' => ['required', 'string', 'exists:routes,code'],
+            'package_size_code' => ['required', 'string', 'exists:package_sizes,code'],
+            'pickup_type' => ['nullable', 'in:hub,doorstep'],
+            'drop_type' => ['nullable', 'in:hub,doorstep'],
+            'is_express' => ['nullable', 'boolean'],
+            'has_insurance' => ['nullable', 'boolean'],
+            'declared_value_lkr' => ['nullable', 'numeric', 'min:0'],
+            'cod_amount_lkr' => ['nullable', 'numeric', 'min:0'],
+        ]);
+
+        $quote = $pricing->quote(
+            routeCode: $validated['route_code'],
+            sizeCode: $validated['package_size_code'],
+            pickupType: $validated['pickup_type'] ?? 'hub',
+            dropType: $validated['drop_type'] ?? 'hub',
+            isExpress: (bool) ($validated['is_express'] ?? false),
+            hasInsurance: (bool) ($validated['has_insurance'] ?? false),
+            declaredValueLkr: isset($validated['declared_value_lkr']) ? (float) $validated['declared_value_lkr'] : null,
+            codAmountLkr: isset($validated['cod_amount_lkr']) ? (float) $validated['cod_amount_lkr'] : null,
+        );
+
+        return ApiResponse::success($quote);
+    }
+
     public function index(Request $request): JsonResponse
     {
         $parcels = Parcel::query()
             ->where('customer_id', $request->user()->id)
-            ->with(['route', 'trip'])
+            ->with(['route', 'trip', 'packageSize'])
             ->orderByDesc('created_at')
             ->limit((int) min($request->query('limit', 50), 100))
             ->offset((int) $request->query('offset', 0))
@@ -54,7 +139,7 @@ class ParcelController extends Controller
         $parcel = Parcel::query()
             ->where('id', $id)
             ->where('customer_id', $request->user()->id)
-            ->with(['route', 'trip', 'events'])
+            ->with(['route', 'trip', 'events', 'packageSize'])
             ->firstOrFail();
 
         return ApiResponse::success([

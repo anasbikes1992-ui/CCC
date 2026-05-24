@@ -12,22 +12,34 @@ use RuntimeException;
 
 class WhatsAppService
 {
+    private string $provider;
     private string $phoneNumberId;
     private string $accessToken;
     private string $appSecret;
     private string $baseUrl;
+    private string $openWaBaseUrl;
+    private string $openWaApiKey;
+    private string $openWaSendTextPath;
 
     public function __construct()
     {
+        $this->provider = (string) config('services.whatsapp.provider', 'meta');
         $this->phoneNumberId = config('services.whatsapp.phone_number_id') ?? '';
         $this->accessToken = config('services.whatsapp.access_token') ?? '';
         $this->appSecret = config('services.whatsapp.app_secret') ?? '';
         $apiVersion = config('services.whatsapp.api_version', 'v21.0');
         $this->baseUrl = "https://graph.facebook.com/{$apiVersion}/{$this->phoneNumberId}";
+        $this->openWaBaseUrl = rtrim((string) config('services.whatsapp.openwa.base_url', ''), '/');
+        $this->openWaApiKey = (string) config('services.whatsapp.openwa.api_key', '');
+        $this->openWaSendTextPath = (string) config('services.whatsapp.openwa.send_text_path', '/api/sendText');
     }
 
     public function verifyWebhook(string $mode, string $token, string $challenge): ?string
     {
+        if ($this->provider !== 'meta') {
+            return null;
+        }
+
         $verifyToken = (string) config('services.whatsapp.webhook_verify_token', '');
 
         if ($mode !== 'subscribe' || $token === '' || $challenge === '') {
@@ -39,6 +51,10 @@ class WhatsAppService
 
     public function handleWebhook(array $payload, string $rawBody = '', ?string $signature = null): void
     {
+        if ($this->provider !== 'meta') {
+            return;
+        }
+
         if (! $this->isValidWebhookSignature($rawBody, $signature)) {
             Log::warning('WhatsApp webhook rejected due to invalid signature.', [
                 'has_signature' => ! empty($signature),
@@ -92,6 +108,10 @@ class WhatsAppService
      */
     public function sendTemplate(string $toPhone, string $templateName, string $languageCode = 'en', array $params = []): array
     {
+        if ($this->provider === 'openwa') {
+            return $this->sendTemplateViaOpenWa($toPhone, $templateName, $params);
+        }
+
         // Remove leading '+' from phone number if present as Meta API expects it without '+'
         $toPhone = ltrim($toPhone, '+');
 
@@ -131,6 +151,10 @@ class WhatsAppService
      */
     public function sendText(string $toPhone, string $body): array
     {
+        if ($this->provider === 'openwa') {
+            return $this->sendTextViaOpenWa($toPhone, $body);
+        }
+
         $toPhone = ltrim($toPhone, '+');
 
         $payload = [
@@ -201,6 +225,10 @@ class WhatsAppService
 
     private function post(string $endpoint, array $payload): array
     {
+        if ($this->provider === 'openwa') {
+            return $this->postOpenWa($payload);
+        }
+
         if (empty($this->accessToken) || empty($this->phoneNumberId)) {
             Log::warning("WhatsAppService: Missing access token or phone number ID. Skipping send.");
             return ['fake_success' => true];
@@ -222,5 +250,65 @@ class WhatsAppService
         }
 
         return $response->json();
+    }
+
+    private function sendTemplateViaOpenWa(string $toPhone, string $templateName, array $params): array
+    {
+        $templates = (array) config('services.whatsapp.openwa.templates', []);
+        $templateText = (string) ($templates[$templateName] ?? '');
+
+        if ($templateText === '') {
+            $message = sprintf('%s: %s', $templateName, implode(' ', array_map('strval', $params)));
+        } else {
+            $message = $templateText;
+            foreach (array_values($params) as $index => $value) {
+                $message = str_replace('{{'.($index + 1).'}}', (string) $value, $message);
+            }
+        }
+
+        return $this->sendTextViaOpenWa($toPhone, $message);
+    }
+
+    private function sendTextViaOpenWa(string $toPhone, string $body): array
+    {
+        return $this->postOpenWa([
+            'chatId' => $this->toOpenWaChatId($toPhone),
+            'text' => $body,
+        ]);
+    }
+
+    private function postOpenWa(array $payload): array
+    {
+        if ($this->openWaBaseUrl === '') {
+            Log::warning('WhatsAppService(OpenWA): Missing OPENWA_BASE_URL. Skipping send.');
+            return ['fake_success' => true, 'provider' => 'openwa'];
+        }
+
+        $request = Http::acceptJson();
+        if ($this->openWaApiKey !== '') {
+            $request = $request->withHeaders(['api_key' => $this->openWaApiKey]);
+        }
+
+        $response = $request->post($this->openWaBaseUrl.$this->openWaSendTextPath, $payload);
+
+        if ($response->failed()) {
+            $errorMessage = $response->json('message') ?? $response->body();
+            Log::error('OpenWA API Error', [
+                'payload' => $payload,
+                'response' => $response->json(),
+                'status' => $response->status(),
+            ]);
+
+            throw new Exception('OpenWA API Error: '.$errorMessage);
+        }
+
+        return $response->json() ?? ['success' => true, 'provider' => 'openwa'];
+    }
+
+    private function toOpenWaChatId(string $phone): string
+    {
+        $digits = preg_replace('/\D+/', '', $phone) ?? '';
+
+        return $digits.'@c.us';
     }
 }

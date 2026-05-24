@@ -28,8 +28,12 @@ Route::prefix('v1')->group(function () {
 
         // Customer
         Route::name('customer.')->prefix('customer')->group(function () {
+            Route::get('/dashboard/stats', [CustomerParcelController::class, 'stats']);
+            Route::get('/routes', [CustomerParcelController::class, 'routes']);
+            Route::get('/package-sizes', [CustomerParcelController::class, 'packageSizes']);
             Route::get('/parcels', [CustomerParcelController::class, 'index']);
             Route::post('/parcels', [CustomerParcelController::class, 'store'])->name('parcels.store');
+            Route::post('/parcels/quote', [CustomerParcelController::class, 'quote']);
             Route::get('/parcels/{id}', [CustomerParcelController::class, 'show']);
             Route::get('/parcels/{id}/label.pdf', [CustomerParcelController::class, 'label']);
 

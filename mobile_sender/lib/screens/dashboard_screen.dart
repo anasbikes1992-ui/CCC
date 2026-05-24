@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import '../auth_provider.dart';
 import '../api_service.dart';
 import 'book_parcel_screen.dart';
 import 'parcel_list_screen.dart';
@@ -26,16 +24,27 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   Future<void> _loadStats() async {
     setState(() => _isLoading = true);
-    
+
     try {
-      final response = await ApiService.get('/customer/parcels/stats');
-      if (response['success'] == true && mounted) {
+      final response = await ApiService.get('/customer/dashboard/stats');
+      if (!mounted) return;
+
+      if (response['success'] == true) {
         setState(() {
           _stats = response['data'];
-          _isLoading = false;
+        });
+      } else {
+        setState(() {
+          _stats = null;
         });
       }
     } catch (e) {
+      if (mounted) {
+        setState(() {
+          _stats = null;
+        });
+      }
+    } finally {
       if (mounted) {
         setState(() => _isLoading = false);
       }
