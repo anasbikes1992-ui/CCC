@@ -10,7 +10,7 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final _emailController = TextEditingController();
+  final _phoneController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _isLoading = false;
   String? _errorMessage;
@@ -32,12 +32,13 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
             const SizedBox(height: 32),
             TextField(
-              controller: _emailController,
+              controller: _phoneController,
               decoration: const InputDecoration(
-                labelText: 'Email',
+                labelText: 'Phone or Email',
+                hintText: '+94777777003',
                 border: OutlineInputBorder(),
               ),
-              keyboardType: TextInputType.emailAddress,
+              keyboardType: TextInputType.phone,
             ),
             const SizedBox(height: 16),
             TextField(
@@ -75,7 +76,7 @@ class _LoginScreenState extends State<LoginScreen> {
     });
 
     final success = await context.read<AuthProvider>().login(
-      _emailController.text.trim(),
+      _phoneController.text.trim(),
       _passwordController.text,
     );
 
@@ -91,7 +92,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   void dispose() {
-    _emailController.dispose();
+    _phoneController.dispose();
     _passwordController.dispose();
     super.dispose();
   }

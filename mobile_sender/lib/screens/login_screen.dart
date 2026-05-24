@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../config/app_theme.dart';
-import '../providers/auth_provider.dart';
+import '../auth_provider.dart';
+import 'register_screen.dart';
+import 'dashboard_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -11,64 +12,46 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  final _formKey = GlobalKey<FormState>();
   final _phoneController = TextEditingController();
-  final _otpController = TextEditingController();
-  bool _otpSent = false;
+  final _passwordController = TextEditingController();
+  bool _isLoading = false;
+  bool _obscurePassword = true;
 
   @override
   void dispose() {
     _phoneController.dispose();
-    _otpController.dispose();
+    _passwordController.dispose();
     super.dispose();
   }
 
-  Future<void> _sendOtp() async {
-    final phone = _phoneController.text.trim();
-    if (phone.isEmpty) {
-      _showError('Please enter phone number');
-      return;
-    }
+  Future<void> _handleLogin() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    setState(() => _isLoading = true);
 
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
-    final success = await authProvider.login(phone);
-
-    if (success && mounted) {
-      setState(() => _otpSent = true);
-      _showSuccess('OTP sent to $phone');
-    } else if (mounted) {
-      _showError(authProvider.error ?? 'Failed to send OTP');
-    }
-  }
-
-  Future<void> _verifyOtp() async {
-    final phone = _phoneController.text.trim();
-    final otp = _otpController.text.trim();
-
-    if (otp.isEmpty) {
-      _showError('Please enter OTP');
-      return;
-    }
-
-    final authProvider = Provider.of<AuthProvider>(context, listen: false);
-    final success = await authProvider.verifyOtp(phone, otp);
-
-    if (success && mounted) {
-      Navigator.of(context).pushReplacementNamed('/dashboard');
-    } else if (mounted) {
-      _showError(authProvider.error ?? 'Invalid OTP');
-    }
-  }
-
-  void _showError(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message), backgroundColor: AppTheme.error),
+    final result = await authProvider.login(
+      _phoneController.text.trim(),
+      _passwordController.text,
     );
-  }
 
-  void _showSuccess(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message), backgroundColor: AppTheme.success),
-    );
+    setState(() => _isLoading = false);
+
+    if (!mounted) return;
+
+    if (result['success'] == true) {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (context) => const DashboardScreen()),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(result['error']?['message'] ?? 'Login failed'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 
   @override
@@ -76,108 +59,112 @@ class _LoginScreenState extends State<LoginScreen> {
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(AppTheme.spaceLg),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              const SizedBox(height: AppTheme.spaceXxl),
-              _buildHeader(),
-              const SizedBox(height: AppTheme.spaceXl),
-              _buildForm(),
-              const SizedBox(height: AppTheme.spaceLg),
-              _buildActionButton(),
-              const SizedBox(height: AppTheme.spaceMd),
-              if (_otpSent) _buildResendButton(),
-            ],
+          padding: const EdgeInsets.all(24.0),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                const SizedBox(height: 60),
+                
+                Icon(
+                  Icons.local_shipping,
+                  size: 80,
+                  color: Theme.of(context).primaryColor,
+                ),
+                const SizedBox(height: 16),
+                
+                Text(
+                  'CCC Sender',
+                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Book and track your parcels',
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: Colors.grey[600],
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 48),
+                
+                TextFormField(
+                  controller: _phoneController,
+                  keyboardType: TextInputType.phone,
+                  decoration: const InputDecoration(
+                    labelText: 'Phone Number',
+                    hintText: '+94771234567',
+                    prefixIcon: Icon(Icons.phone),
+                    border: OutlineInputBorder(),
+                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter phone number';
+                    }
+                    if (!value.startsWith('+')) {
+                      return 'Phone must start with +';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 16),
+                
+                TextFormField(
+                  controller: _passwordController,
+                  obscureText: _obscurePassword,
+                  decoration: InputDecoration(
+                    labelText: 'Password',
+                    prefixIcon: const Icon(Icons.lock),
+                    border: const OutlineInputBorder(),
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _obscurePassword ? Icons.visibility : Icons.visibility_off,
+                      ),
+                      onPressed: () {
+                        setState(() => _obscurePassword = !_obscurePassword);
+                      },
+                    ),
+                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter password';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 24),
+                
+                ElevatedButton(
+                  onPressed: _isLoading ? null : _handleLogin,
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                  ),
+                  child: _isLoading
+                      ? const SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : const Text('Login', style: TextStyle(fontSize: 16)),
+                ),
+                const SizedBox(height: 16),
+                
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(builder: (context) => const RegisterScreen()),
+                    );
+                  },
+                  child: const Text("Don't have an account? Register"),
+                ),
+              ],
+            ),
           ),
         ),
       ),
     );
-  }
-
-  Widget _buildHeader() {
-    return Column(
-      children: [
-        Container(
-          width: 80,
-          height: 80,
-          decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              colors: [AppTheme.primary, AppTheme.primaryDark],
-            ),
-            borderRadius: BorderRadius.circular(AppTheme.radiusLg),
-          ),
-          child: const Icon(
-            Icons.local_shipping_rounded,
-            size: 48,
-            color: Colors.white,
-          ),
-        ),
-        const SizedBox(height: AppTheme.spaceMd),
-        const Text(
-          'Welcome Back',
-          style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
-        ),
-        const SizedBox(height: AppTheme.spaceXs),
-        const Text(
-          'Login to your CCC account',
-          style: TextStyle(fontSize: 16, color: AppTheme.textSecondary),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildForm() {
-    return Column(
-      children: [
-        TextField(
-          controller: _phoneController,
-          decoration: const InputDecoration(
-            labelText: 'Phone Number',
-            hintText: '+94771234567',
-            prefixIcon: Icon(Icons.phone),
-          ),
-          keyboardType: TextInputType.phone,
-          enabled: !_otpSent,
-        ),
-        if (_otpSent) ...[
-          const SizedBox(height: AppTheme.spaceMd),
-          TextField(
-            controller: _otpController,
-            decoration: const InputDecoration(
-              labelText: 'OTP Code',
-              hintText: '6-digit code',
-              prefixIcon: Icon(Icons.lock),
-            ),
-            keyboardType: TextInputType.number,
-            maxLength: 6,
-          ),
-        ],
-      ],
-    );
-  }
-
-  Widget _buildActionButton() {
-    return Consumer<AuthProvider>(
-      builder: (context, auth, _) {
-        return ElevatedButton(
-          onPressed: auth.isLoading ? null : (_otpSent ? _verifyOtp : _sendOtp),
-          child: auth.isLoading
-              ? const SizedBox(
-                  height: 20,
-                  width: 20,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2,
-                    color: Colors.white,
-                  ),
-                )
-              : Text(_otpSent ? 'Verify OTP' : 'Send OTP'),
-        );
-      },
-    );
-  }
-
-  Widget _buildResendButton() {
-    return TextButton(onPressed: _sendOtp, child: const Text('Resend OTP'));
   }
 }

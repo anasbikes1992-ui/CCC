@@ -1,89 +1,97 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../config/app_theme.dart';
-import '../providers/auth_provider.dart';
+import '../auth_provider.dart';
+import 'login_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final authProvider = Provider.of<AuthProvider>(context);
+    final user = authProvider.user;
+
     return Scaffold(
-      appBar: AppBar(title: const Text('Profile')),
-      body: Consumer<AuthProvider>(
-        builder: (context, auth, _) {
-          final user = auth.user;
-          if (user == null) return const Center(child: Text('No user data'));
-
-          return ListView(
-            padding: const EdgeInsets.all(AppTheme.spaceMd),
-            children: [
-              _buildProfileHeader(user.name, user.phone),
-              const SizedBox(height: AppTheme.spaceLg),
-              _buildInfoCard('Phone', user.phone),
-              _buildInfoCard('Email', user.email),
-              const SizedBox(height: AppTheme.spaceLg),
-              ElevatedButton(
-                onPressed: () => _logout(context, auth),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppTheme.error,
-                ),
-                child: const Text('Logout'),
-              ),
-            ],
-          );
-        },
-      ),
-    );
-  }
-
-  Widget _buildProfileHeader(String name, String phone) {
-    return Center(
-      child: Column(
-        children: [
-          CircleAvatar(
-            radius: 48,
-            backgroundColor: AppTheme.primary.withValues(alpha: 0.1),
-            child: Text(
-              name[0].toUpperCase(),
-              style: const TextStyle(
-                fontSize: 32,
-                fontWeight: FontWeight.bold,
-                color: AppTheme.primary,
-              ),
-            ),
-          ),
-          const SizedBox(height: AppTheme.spaceMd),
-          Text(
-            name,
-            style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: AppTheme.spaceXs),
-          Text(phone, style: const TextStyle(color: AppTheme.textSecondary)),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildInfoCard(String label, String value) {
-    return Card(
-      margin: const EdgeInsets.only(bottom: AppTheme.spaceMd),
-      child: Padding(
-        padding: const EdgeInsets.all(AppTheme.spaceMd),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            const SizedBox(height: 20),
+            
+            // Profile Avatar
+            CircleAvatar(
+              radius: 50,
+              backgroundColor: Theme.of(context).primaryColor,
+              child: const Icon(Icons.person, size: 50, color: Colors.white),
+            ),
+            const SizedBox(height: 16),
+            
+            // User Info
             Text(
-              label,
-              style: const TextStyle(
-                fontSize: 12,
-                color: AppTheme.textSecondary,
+              user?['full_name'] ?? 'User',
+              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                fontWeight: FontWeight.bold,
               ),
             ),
-            const SizedBox(height: 4),
             Text(
-              value,
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+              user?['email'] ?? '',
+              style: TextStyle(color: Colors.grey[600]),
+            ),
+            Text(
+              user?['phone'] ?? '',
+              style: TextStyle(color: Colors.grey[600]),
+            ),
+            const SizedBox(height: 32),
+            
+            // Menu Items
+            _buildMenuItem(
+              context,
+              'My Parcels',
+              Icons.inventory_2,
+              () {},
+            ),
+            _buildMenuItem(
+              context,
+              'Payment Methods',
+              Icons.payment,
+              () {},
+            ),
+            _buildMenuItem(
+              context,
+              'Addresses',
+              Icons.location_on,
+              () {},
+            ),
+            _buildMenuItem(
+              context,
+              'Settings',
+              Icons.settings,
+              () {},
+            ),
+            _buildMenuItem(
+              context,
+              'Help & Support',
+              Icons.help,
+              () {},
+            ),
+            const SizedBox(height: 16),
+            
+            // Logout Button
+            ElevatedButton(
+              onPressed: () async {
+                await authProvider.logout();
+                if (context.mounted) {
+                  Navigator.of(context).pushReplacement(
+                    MaterialPageRoute(builder: (context) => const LoginScreen()),
+                  );
+                }
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.red,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 32),
+              ),
+              child: const Text('Logout'),
             ),
           ],
         ),
@@ -91,29 +99,20 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  Future<void> _logout(BuildContext context, AuthProvider auth) async {
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Logout'),
-        content: const Text('Are you sure you want to logout?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
-          ),
-          ElevatedButton(
-            onPressed: () => Navigator.pop(context, true),
-            style: ElevatedButton.styleFrom(backgroundColor: AppTheme.error),
-            child: const Text('Logout'),
-          ),
-        ],
+  Widget _buildMenuItem(
+    BuildContext context,
+    String title,
+    IconData icon,
+    VoidCallback onTap,
+  ) {
+    return Card(
+      margin: const EdgeInsets.only(bottom: 8.0),
+      child: ListTile(
+        leading: Icon(icon, color: Theme.of(context).primaryColor),
+        title: Text(title),
+        trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+        onTap: onTap,
       ),
     );
-
-    if (confirmed == true && context.mounted) {
-      await auth.logout();
-      Navigator.of(context).pushReplacementNamed('/login');
-    }
   }
 }

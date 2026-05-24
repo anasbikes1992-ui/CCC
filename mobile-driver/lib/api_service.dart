@@ -1,16 +1,10 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
-import 'dart:io' show Platform;
+import 'config.dart';
 
 class ApiService {
-  static String get baseUrl {
-    // 10.0.2.2 is the localhost alias for Android emulator
-    if (Platform.isAndroid) {
-      return 'http://10.0.2.2:8000/api/v1';
-    }
-    return 'http://localhost:8000/api/v1';
-  }
+  static String get baseUrl => AppConfig.apiBaseUrl;
 
   static Future<Map<String, String>> _getHeaders() async {
     final prefs = await SharedPreferences.getInstance();

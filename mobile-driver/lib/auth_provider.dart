@@ -41,7 +41,7 @@ class AuthProvider with ChangeNotifier {
   Future<bool> login(String email, String password) async {
     try {
       final response = await ApiService.post('/auth/login', {
-        'email': email,
+        'phone': email,
         'password': password,
       });
 

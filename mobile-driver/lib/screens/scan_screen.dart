@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../api_service.dart';
 import 'delivery_verification_screen.dart';
+import 'otp_verification_screen.dart';
 
 class ScanScreen extends StatefulWidget {
   final String tripId;
@@ -46,8 +47,42 @@ class _ScanScreenState extends State<ScanScreen> {
       _scannerController.stop();
 
       try {
-        if (_selectedEvent == 'DELIVERED') {
-          // Navigate to delivery verification screen instead of calling simple scan
+        if (_selectedEvent == 'OUT_FOR_DELIVERY') {
+          // Fetch parcel data first, then navigate to OTP verification
+          final prefs = await SharedPreferences.getInstance();
+          final token = prefs.getString('auth_token');
+
+          final response = await http.post(
+            Uri.parse('${ApiService.baseUrl}/driver/parcels/qr-scan/fetch'),
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json',
+              'Authorization': 'Bearer $token',
+            },
+            body: jsonEncode({'qr_token': code}),
+          );
+
+          final data = jsonDecode(response.body);
+
+          if (response.statusCode >= 200 && response.statusCode < 300 && data['success'] == true) {
+            if (mounted) {
+              final result = await Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => OtpVerificationScreen(
+                    parcelData: data['data']['parcel'],
+                  ),
+                ),
+              );
+              if (result == true) {
+                _showMessage('Delivery completed successfully!', Colors.green);
+              }
+            }
+          } else {
+            _showMessage(data['error']?['message'] ?? 'Failed to fetch parcel', Colors.red);
+          }
+        } else if (_selectedEvent == 'DELIVERED') {
+          // Direct delivery (no OTP) - for hub-to-hub deliveries
           if (mounted) {
             final result = await Navigator.push(
               context,
