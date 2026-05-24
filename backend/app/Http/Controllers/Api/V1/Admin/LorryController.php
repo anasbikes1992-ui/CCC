@@ -14,7 +14,7 @@ class LorryController extends Controller
 {
     public function index(Request $request): JsonResponse
     {
-        $lorries = Lorry::orderBy('plate_number')->get();
+        $lorries = Lorry::orderBy('registration_number')->get();
         return ApiResponse::success(['lorries' => $lorries]);
     }
 

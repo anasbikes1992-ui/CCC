@@ -6,6 +6,7 @@ namespace App\Models;
 
 use App\Concerns\HasUuid;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Hub extends Model
@@ -24,5 +25,10 @@ class Hub extends Model
             'hub_lat' => 'float',
             'hub_lng' => 'float',
         ];
+    }
+
+    public function routes(): HasMany
+    {
+        return $this->hasMany(Route::class, 'origin_hub_id');
     }
 }
