@@ -257,7 +257,7 @@ class _BookParcelScreenState extends State<BookParcelScreen> {
               const SizedBox(height: 16),
 
               DropdownButtonFormField<String>(
-                value: _selectedRoute,
+                initialValue: _selectedRoute,
                 decoration: const InputDecoration(
                   labelText: 'Route',
                   border: OutlineInputBorder(),
@@ -282,7 +282,7 @@ class _BookParcelScreenState extends State<BookParcelScreen> {
               const SizedBox(height: 12),
 
               DropdownButtonFormField<String>(
-                value: _selectedSize,
+                initialValue: _selectedSize,
                 decoration: const InputDecoration(
                   labelText: 'Package Size',
                   border: OutlineInputBorder(),

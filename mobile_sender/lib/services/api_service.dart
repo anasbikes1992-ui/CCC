@@ -104,9 +104,7 @@ class ApiService {
     Map<String, dynamic> priceData,
   ) async {
     final response = await http.post(
-      Uri.parse(
-        '${AppConfig.apiBaseUrl}${AppConfig.bookingEndpoint}/calculate-price',
-      ),
+      Uri.parse('${AppConfig.apiBaseUrl}${AppConfig.calculatePriceEndpoint}'),
       headers: _headers,
       body: json.encode(priceData),
     );
@@ -146,19 +144,25 @@ class ApiService {
     );
 
     final data = await _handleResponse(response);
-    return Parcel.fromJson(data['data']);
+    final payload = data['data'];
+    final parcelJson = payload is Map<String, dynamic>
+        ? (payload['parcel'] ?? payload)
+        : payload;
+    return Parcel.fromJson(parcelJson as Map<String, dynamic>);
   }
 
   Future<Parcel> trackParcel(String parcelNumber) async {
     final response = await http.get(
-      Uri.parse(
-        '${AppConfig.apiBaseUrl}${AppConfig.parcelsEndpoint}/track/$parcelNumber',
-      ),
+      Uri.parse('${AppConfig.apiBaseUrl}${AppConfig.trackEndpoint}/$parcelNumber/track'),
       headers: _headers,
     );
 
     final data = await _handleResponse(response);
-    return Parcel.fromJson(data['data']);
+    final payload = data['data'];
+    final parcelJson = payload is Map<String, dynamic>
+        ? (payload['parcel'] ?? payload)
+        : payload;
+    return Parcel.fromJson(parcelJson as Map<String, dynamic>);
   }
 
   Future<Map<String, dynamic>> cancelParcel(

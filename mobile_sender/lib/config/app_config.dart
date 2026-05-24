@@ -1,19 +1,19 @@
 class AppConfig {
   // API Configuration - PRODUCTION
-  static const String apiBaseUrl = 'https://ccc-production.up.railway.app';
+  static const String apiBaseUrl = 'https://ccc-production-30a5.up.railway.app';
   static const String apiVersion = 'v1';
   
   // Web URLs
   static const String webSenderUrl = 'https://web-sender.vercel.app';
-  static const String webTrackingUrl = 'https://web-tracking.vercel.app';
-  static const String webAdminUrl = 'https://web-admin.vercel.app';
+  static const String webTrackingUrl = 'https://web-tracking-sigma.vercel.app';
+  static const String webAdminUrl = 'https://web-admin-rho-sepia.vercel.app';
 
   // Endpoints
   static const String loginEndpoint = '/api/$apiVersion/auth/login';
   static const String otpVerifyEndpoint = '/api/$apiVersion/auth/verify-otp';
-  static const String routesEndpoint = '/api/$apiVersion/routes';
+  static const String routesEndpoint = '/api/$apiVersion/customer/routes';
   static const String bookingEndpoint = '/api/$apiVersion/customer/parcels';
-  static const String calculatePriceEndpoint = '/api/$apiVersion/customer/parcels/calculate-price';
+  static const String calculatePriceEndpoint = '/api/$apiVersion/customer/parcels/quote';
   static const String parcelsEndpoint = '/api/$apiVersion/customer/parcels';
   static const String profileEndpoint = '/api/$apiVersion/auth/me';
   static const String trackEndpoint = '/api/$apiVersion/public/parcels';
