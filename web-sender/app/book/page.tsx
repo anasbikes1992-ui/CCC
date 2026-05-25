@@ -96,7 +96,7 @@ export default function BookParcelPage() {
              </div>
              
              <a
-              href={`${process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000/api/v1'}/customer/parcels/${successData.id}/label.pdf`}
+              href={`${process.env.NEXT_PUBLIC_API_BASE_URL || '/api/v1'}/customer/parcels/${successData.id}/label.pdf`}
               target="_blank"
               rel="noopener noreferrer"
               className="mt-4 flex w-full justify-center rounded-xl bg-accent px-4 py-3 font-semibold text-white transition hover:brightness-110 active:scale-95"

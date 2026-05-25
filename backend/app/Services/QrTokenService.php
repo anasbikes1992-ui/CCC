@@ -28,7 +28,7 @@ class QrTokenService
 
     private function key(): string
     {
-        $secret = $this->secret ?? config('services.qr.secret');
+        $secret = $this->secret ?? config('services.qr.secret') ?? config('app.key');
         if (! $secret) {
             throw new \RuntimeException('QR_TOKEN_SECRET is not configured');
         }
