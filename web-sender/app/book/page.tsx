@@ -31,7 +31,7 @@ export default function BookParcelPage() {
     drop_type: "hub",
     drop_address: "",
     receiver_name: "",
-    receiver_phone: "+947",
+    receiver_phone: "",
     payment_method: "cod",
   });
 
@@ -41,7 +41,20 @@ export default function BookParcelPage() {
 
   const routeHubs = ROUTE_HUBS[formData.route_code] ?? ROUTE_HUBS["CMB-KDY"];
 
-  const nextStep = () => setStep((s) => Math.min(s + 1, 4));
+  const nextStep = () => {
+    if (step === 3) {
+      if (!formData.receiver_name.trim()) {
+        setError("Receiver name is required.");
+        return;
+      }
+      if (!/^\+\d{10,15}$/.test(formData.receiver_phone)) {
+        setError("Receiver phone must be in E.164 format, e.g. +94712345678");
+        return;
+      }
+    }
+    setError("");
+    setStep((s) => Math.min(s + 1, 4));
+  };
   const prevStep = () => setStep((s) => Math.max(s - 1, 1));
 
   async function handleSubmit() {
