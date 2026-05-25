@@ -1,0 +1,63 @@
+- generic [ref=e1]:
+  - banner [ref=e2]:
+    - generic [ref=e3]:
+      - link "CCC Colombo Cargo Connect Sender Portal" [ref=e4] [cursor=pointer]:
+        - /url: /
+        - generic [ref=e5]: CCC
+        - generic [ref=e6]:
+          - generic [ref=e7]: Colombo Cargo Connect
+          - generic [ref=e8]: Sender Portal
+      - navigation [ref=e9]:
+        - link "Home" [ref=e10] [cursor=pointer]:
+          - /url: /
+        - link "Log in" [ref=e11] [cursor=pointer]:
+          - /url: /login
+        - link "Register" [ref=e12] [cursor=pointer]:
+          - /url: /register
+        - link "Dashboard" [ref=e13] [cursor=pointer]:
+          - /url: /dashboard
+        - link "Book" [ref=e14] [cursor=pointer]:
+          - /url: /book
+        - link "Track Parcel" [ref=e15] [cursor=pointer]:
+          - /url: https://web-tracking-sigma.vercel.app
+          - text: Track Parcel
+          - img [ref=e16]
+  - main [ref=e19]:
+    - generic [ref=e21]:
+      - link [ref=e22] [cursor=pointer]:
+        - /url: /dashboard
+        - img [ref=e23]
+      - heading "Book a Parcel" [level=1] [ref=e25]
+    - generic [ref=e26]:
+      - generic [ref=e27]:
+        - generic [ref=e29]: "1"
+        - generic [ref=e32]: "2"
+        - generic [ref=e35]: "3"
+        - generic [ref=e38]: "4"
+      - generic [ref=e39]:
+        - generic [ref=e63]:
+          - heading "Package Details" [level=2] [ref=e64]:
+            - img [ref=e65]
+            - text: Package Details
+          - generic [ref=e69]:
+            - generic [ref=e70]:
+              - generic [ref=e71]: Size Category
+              - combobox "Size Category" [ref=e72]:
+                - option "Small (Up to 5kg)" [selected]
+                - option "Medium (Up to 25kg)"
+                - option "Large (Up to 75kg)"
+                - option "Extra Large (Up to 200kg)"
+                - option "Bale / Pallet (200kg+)"
+            - generic [ref=e73]:
+              - generic [ref=e74]: Estimated Weight (kg)
+              - spinbutton "Estimated Weight (kg)" [ref=e75]: "1"
+        - generic [ref=e53]:
+          - button "Back" [ref=e54]
+          - button "Continue" [active] [ref=e55]:
+            - text: Continue
+            - img [ref=e56]
+  - contentinfo [ref=e58]:
+    - generic [ref=e59]:
+      - generic [ref=e60]: Colombo Cargo Connect — Hub-to-Hub Logistics
+      - generic [ref=e61]: Sri Lanka 🇱🇰
+  - alert [ref=e62]
