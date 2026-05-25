@@ -31,7 +31,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             </a>
             <nav className="flex items-center gap-5 text-sm text-muted">
               <a
-                href="http://localhost:3000"
+                href="https://web-sender.vercel.app"
                 target="_blank"
                 rel="noreferrer"
                 className="flex items-center gap-1.5 transition-colors hover:text-foreground"
@@ -43,7 +43,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               </a>
             </nav>
           </div>
-          <div className="h-px bg-gradient-to-r from-transparent via-accent/40 to-transparent" />
+          <div className="h-px bg-linear-to-r from-transparent via-accent/40 to-transparent" />
         </header>
 
         {children}

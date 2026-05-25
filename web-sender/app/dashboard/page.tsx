@@ -6,7 +6,36 @@ import { useRouter } from "next/navigation";
 import { fetchApi, getToken, clearToken } from "../../lib/api";
 import { Package, Plus, Truck, ChevronRight, LogOut } from "lucide-react";
 
-const TRACKING_URL = process.env.NEXT_PUBLIC_TRACKING_URL ?? "http://localhost:3001";
+const TRACKING_URL = process.env.NEXT_PUBLIC_TRACKING_URL ?? "https://web-tracking-sigma.vercel.app";
+
+function getRouteEndpoints(parcel: any): { origin: string; destination: string } {
+  const routeValue = parcel.route;
+
+  if (typeof routeValue === "string") {
+    const [origin = parcel.pickup_type || "CMB", destination = parcel.drop_type || "KDY"] = routeValue.split("-");
+    return { origin, destination };
+  }
+
+  if (routeValue && typeof routeValue === "object") {
+    const code = typeof routeValue.code === "string" ? routeValue.code : parcel.route_code;
+    const [origin = parcel.pickup_type || "CMB", destination = parcel.drop_type || "KDY"] = typeof code === "string" ? code.split("-") : [];
+    return {
+      origin: routeValue.origin_hub?.code ?? origin,
+      destination: routeValue.destination_hub?.code ?? destination,
+    };
+  }
+
+  const routeCode = parcel.route_code;
+  if (typeof routeCode === "string") {
+    const [origin = parcel.pickup_type || "CMB", destination = parcel.drop_type || "KDY"] = routeCode.split("-");
+    return { origin, destination };
+  }
+
+  return {
+    origin: parcel.pickup_type || "CMB",
+    destination: parcel.drop_type || "KDY",
+  };
+}
 
 export default function DashboardPage() {
   const [parcels, setParcels] = useState<any[]>([]);
@@ -101,6 +130,10 @@ export default function DashboardPage() {
         ) : (
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {parcels.map((parcel: any) => (
+              (() => {
+                const { origin, destination } = getRouteEndpoints(parcel);
+
+                return (
               <a
                 href={`${TRACKING_URL}/${parcel.parcel_number}`}
                 key={parcel.id}
@@ -124,8 +157,8 @@ export default function DashboardPage() {
                     <div className="h-2 w-2 rounded-full border-2 border-accent bg-white"></div>
                   </div>
                   <div className="flex flex-col justify-between h-12 text-sm font-medium">
-                    <span>{parcel.route?.split('-')[0] || parcel.pickup_type}</span>
-                    <span>{parcel.route?.split('-')[1] || parcel.drop_type}</span>
+                    <span>{origin}</span>
+                    <span>{destination}</span>
                   </div>
                 </div>
 
@@ -134,6 +167,8 @@ export default function DashboardPage() {
                   <ChevronRight className="h-4 w-4 text-muted transition group-hover:text-accent group-hover:translate-x-1" />
                 </div>
               </a>
+                );
+              })()
             ))}
           </div>
         )}
